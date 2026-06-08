@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravitud - Zona Inestable</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="screen screen-1">
+        <canvas id="waveCanvas"></canvas>
+
+        <div class="container">
+            <div class="top-controls">
+                <div class="toggle-wrapper interactive-btn active" id="toggle-musica">
+                    <div class="toggle-switch"><div class="toggle-knob"></div></div>
+                    <span>Música</span>
+                </div>
+                <div class="toggle-wrapper interactive-btn active" id="toggle-efectos">
+                    <div class="toggle-switch"><div class="toggle-knob"></div></div>
+                    <span>Efectos</span>
+                </div>
+            </div>
+
+            <div class="sun-menu" id="sun-menu">
+                <a href="#" class="nav-link interactive-btn concepto">EL<br>CONCEPTO</a>
+                <a href="#" class="nav-link interactive-btn experimental">LO<br>EXPERIMENTAL</a>
+                <a href="#" class="nav-link interactive-btn referencia">LA<br>REFERENCIA</a>
+                
+                <div class="hit-area" id="sunHitArea" title="Punto de Singularidad"></div>
+            </div>
+
+            <div class="main-title-container">
+                <h1 class="main-title" id="gravitudTitle">GRAVITUD</h1>
+                
+                <div class="subtitle-container" id="subtitleContainer">
+                    <p class="subtitle">Bienvenido a la experiencia, desliza para continuar</p>
+                </div>
+            </div>
+
+            <div class="sandbox-container" id="sandboxSecret">
+                <img src="Sandbox.png" alt="Sandbox Icon" class="sandbox-icon">
+            </div>
+
+        </div>
+    </div>
+
+    <div class="screen screen-2" id="nextScreen">
+        </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
