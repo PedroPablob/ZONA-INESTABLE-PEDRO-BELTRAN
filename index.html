@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gravitud - Zona Inestable</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
 
-    <div class="screen screen-1">
+    <div class="transition-glow" id="transitionGlow"></div>
+
+    <div class="screen screen-1 active-screen" id="home">
         <canvas id="waveCanvas"></canvas>
 
         <div class="container">
@@ -24,11 +30,11 @@
             </div>
 
             <div class="sun-menu" id="sun-menu">
-                <a href="#" class="nav-link interactive-btn concepto">EL<br>CONCEPTO</a>
-                <a href="#" class="nav-link interactive-btn experimental">LO<br>EXPERIMENTAL</a>
-                <a href="#" class="nav-link interactive-btn referencia">LA<br>REFERENCIA</a>
+                <a href="#" class="nav-link interactive-btn concepto" data-target="concepto">EL<br>CONCEPTO</a>
+                <a href="#" class="nav-link interactive-btn experimental" data-target="experimental">LO<br>EXPERIMENTAL</a>
+                <a href="#" class="nav-link interactive-btn referencia" data-target="referencia">LA<br>REFERENCIA</a>
                 
-                <div class="hit-area" id="sunHitArea" title="Punto de Singularidad"></div>
+                <div class="hit-area" id="sunHitArea"></div>
             </div>
 
             <div class="main-title-container">
@@ -42,12 +48,23 @@
             <div class="sandbox-container" id="sandboxSecret">
                 <img src="Sandbox.png" alt="Sandbox Icon" class="sandbox-icon">
             </div>
-
         </div>
     </div>
 
-    <div class="screen screen-2" id="nextScreen">
-        </div>
+    <div class="screen new-section" id="screen-concepto">
+        <h1>EL CONCEPTO</h1>
+        <button class="back-btn">VOLVER</button>
+    </div>
+
+    <div class="screen new-section" id="screen-experimental">
+        <h1>LO EXPERIMENTAL</h1>
+        <button class="back-btn">VOLVER</button>
+    </div>
+
+    <div class="screen new-section" id="screen-referencia">
+        <h1>LA REFERENCIA</h1>
+        <button class="back-btn">VOLVER</button>
+    </div>
 
     <script src="script.js"></script>
 </body>

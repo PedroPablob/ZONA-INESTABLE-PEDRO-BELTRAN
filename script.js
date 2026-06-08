@@ -26,7 +26,6 @@ function draw() {
 }
 draw();
 
-// Olas reaccionan a los botones superiores
 document.querySelectorAll('.interactive-btn').forEach(btn => {
     btn.addEventListener('click', () => { intensity = 2.5; });
 });
@@ -58,23 +57,16 @@ gravitudTitle.addEventListener('click', (e) => {
         isFalling = true;
         
         letterSpans.forEach(s => {
-            s.classList.remove('letter-blackened');
-            s.classList.remove('letter-shadowed');
-            s.classList.remove('letter-fading');
+            s.classList.remove('letter-blackened', 'letter-shadowed', 'letter-fading');
         });
         
         gravitudTitle.classList.add('title-fall');
-
-        const subtitleContainer = document.getElementById('subtitleContainer');
-        subtitleContainer.classList.add('subtitle-visible');
-
+        document.getElementById('subtitleContainer').classList.add('subtitle-visible');
         document.body.classList.add('scroll-allowed');
     }
 });
 
 letterSpans.forEach(span => {
-    
-    // Rastro dinámico (sin alterar las olas)
     span.addEventListener('mouseover', (e) => {
         if(!isBlackoutMode && !isFullyBlack && !isFalling) {
             e.target.classList.remove('letter-fading');
@@ -99,7 +91,6 @@ letterSpans.forEach(span => {
         }
     });
 
-    // Clics (alteran las olas)
     span.addEventListener('click', (e) => {
         if (isFalling) return; 
 
@@ -135,16 +126,59 @@ letterSpans.forEach(span => {
     });
 });
 
-// --- Elemento Oculto (Sandbox Secret) ---
+// --- ANIMACIÓN DE EXPANSIÓN Y NAVEGACIÓN ---
+const transitionGlow = document.getElementById('transitionGlow');
+const navLinks = document.querySelectorAll('.nav-link');
+
+navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('data-target');
+        
+        // El brillo blanco nace del sol y se expande
+        transitionGlow.classList.add('expanding');
+
+        setTimeout(() => {
+            // Ocultamos la Home screen
+            document.getElementById('home').classList.remove('active-screen');
+            document.querySelectorAll('.screen').forEach(s => {
+                s.style.display = 'none';
+                s.classList.remove('animate-fall'); // Limpieza preventiva
+            });
+            
+            // Levantamos la pantalla blanca correspondiente
+            const nextScreen = document.getElementById('screen-' + targetId);
+            nextScreen.style.display = 'flex';
+            nextScreen.classList.add('animate-fall'); // Inyecta la animación de caída al h1
+            
+            // Retiramos el overlay blanco
+            transitionGlow.classList.remove('expanding');
+        }, 1200);
+    });
+});
+
+// Volver a la pantalla principal
+document.querySelectorAll('.back-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        transitionGlow.classList.add('expanding');
+        setTimeout(() => {
+            document.querySelectorAll('.screen').forEach(s => {
+                s.style.display = 'none';
+                s.classList.remove('animate-fall'); // Quita la clase para que pueda repetirse
+            });
+            const homeScreen = document.getElementById('home');
+            homeScreen.classList.add('active-screen');
+            homeScreen.style.display = 'block';
+            transitionGlow.classList.remove('expanding');
+        }, 1200);
+    });
+});
+
+// --- Botón Secreto Sandbox ---
 const sunHitArea = document.getElementById('sunHitArea');
 const sandboxSecret = document.getElementById('sandboxSecret');
 
 sunHitArea.addEventListener('click', () => {
     sandboxSecret.classList.toggle('sandbox-revealed');
-    
-    if(sandboxSecret.classList.contains('sandbox-revealed')){
-        intensity = 2.0; 
-    } else {
-        intensity = 1.0; 
-    }
+    intensity = sandboxSecret.classList.contains('sandbox-revealed') ? 2.0 : 1.0;
 });
