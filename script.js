@@ -1,6 +1,41 @@
+// --- Elementos de Audio e Interacción ---
+const bgMusic = document.getElementById('bgMusic');
+let audioStarted = false;
+
+// --- LÓGICA DE LA PANTALLA DE INTRODUCCIÓN ---
+const introScreen = document.getElementById('introScreen');
+const btnAceptar = document.getElementById('btnAceptar');
+
+btnAceptar.addEventListener('click', () => {
+    // Ocultar la pantalla de advertencia
+    introScreen.classList.add('hidden');
+    
+    // Iniciar música automáticamente al aceptar si el botón de música está activo
+    if (!audioStarted && bgMusic) {
+        const toggleMusica = document.getElementById('toggle-musica');
+        if (toggleMusica && toggleMusica.classList.contains('active')) {
+            bgMusic.play().catch(err => console.log("Autoplay bloqueado"));
+        }
+        audioStarted = true;
+    }
+});
+
 // --- Controles y Canvas (Fondo) ---
 const toggles = document.querySelectorAll('.toggle-wrapper');
-toggles.forEach(t => t.addEventListener('click', () => t.classList.toggle('active')));
+toggles.forEach(t => {
+    t.addEventListener('click', () => {
+        t.classList.toggle('active');
+        
+        // Lógica específica para el botón de música
+        if (t.id === 'toggle-musica' && bgMusic) {
+            if (t.classList.contains('active')) {
+                bgMusic.play().catch(e => console.log("Esperando interacción manual"));
+            } else {
+                bgMusic.pause();
+            }
+        }
+    });
+});
 
 const canvas = document.getElementById('waveCanvas');
 const ctx = canvas.getContext('2d');
@@ -131,6 +166,10 @@ const navLinks = document.querySelectorAll('.nav-link');
 navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
+        
+        // Pausar la música al entrar a una nueva sección
+        if (bgMusic) bgMusic.pause();
+
         const targetId = link.getAttribute('data-target');
         
         transitionGlow.classList.add('expanding');
@@ -156,6 +195,13 @@ navLinks.forEach(link => {
 // Volver a la pantalla principal reseteando los estados de animación
 document.querySelectorAll('.back-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+        
+        // Reanudar la música al volver, solo si el toggle está activo
+        const toggleMusica = document.getElementById('toggle-musica');
+        if (bgMusic && toggleMusica && toggleMusica.classList.contains('active') && audioStarted) {
+            bgMusic.play().catch(e => console.log("Autoplay bloqueado"));
+        }
+
         transitionGlow.classList.add('expanding');
         
         setTimeout(() => {

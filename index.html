@@ -13,6 +13,14 @@
 </head>
 <body>
 
+    <div class="intro-screen" id="introScreen">
+        <div class="intro-hex">
+            <div class="intro-hole"></div>
+        </div>
+        <p class="intro-text">Este sitio contiene música y efectos de sonido.<br>Se recomienda discreción y revisar tu volumen antes de iniciar.</p>
+        <button class="intro-btn" id="btnAceptar">ACEPTAR</button>
+    </div>
+
     <div class="transition-glow" id="transitionGlow"></div>
 
     <div class="screen screen-1 active-screen" id="home">
@@ -67,7 +75,7 @@
         </div>
 
         <div class="qr-showcase scroll-anim" style="padding: 40px; border-radius: 40px; margin-bottom: 0; display: flex; align-items: center; justify-content: center;">
-            <img src="juego de mesa.png" alt="Tablero Zona Inestable" style="width: 50%; display: block; margin: 0 auto; border-radius: 20px; box-shadow: 0 15px 35px rgba(156, 61, 66, 0.2);">
+            <img src="juego de mesa.png" alt="Tablero Zona Inestable" style="width: 50%; display: block; margin: 0 auto; border-radius: 20px;">
         </div>
 
         <div class="ref-container" style="padding-top: 40px;">
@@ -198,7 +206,6 @@
             </div>
 
             <div class="ref-block scroll-anim conclusion-block">
-                <h2>LA ABSTRACCIÓN DIGITAL</h2>
                 <p>"Esta interacción de fuerzas tangibles y mecánicas es el fundamento físico que da origen a la abstracción digital y sensorial de GRAVITUD."</p>
             </div>
 
@@ -296,6 +303,10 @@
             <video id="modalVideo" controls></video>
         </div>
     </div>
+
+    <audio id="bgMusic" loop>
+        <source src="OLAS.mp3" type="audio/mpeg">
+    </audio>
 
     <script src="script.js"></script>
 </body>

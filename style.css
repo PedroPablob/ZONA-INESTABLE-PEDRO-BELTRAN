@@ -11,6 +11,87 @@ body.scroll-allowed {
     scroll-behavior: smooth;
 }
 
+/* === PANTALLA DE CARGA / ADVERTENCIA (ACTUALIZADA) === */
+.intro-screen {
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100vh;
+    /* Cambio de color: De casi negro a Burdeos principal */
+    background-color: #9c3d42; 
+    z-index: 3000; 
+    display: flex; 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.intro-screen.hidden {
+    opacity: 0; 
+    visibility: hidden; 
+    pointer-events: none;
+}
+
+.intro-hex {
+    width: 80px; 
+    height: 80px;
+    background-color: #FEFBF2; /* Crema */
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    animation: spin-wheel 4s linear infinite;
+    margin-bottom: 30px;
+}
+
+.intro-hole {
+    width: 26px; 
+    height: 26px;
+    /* Debe coincidir con el nuevo fondo burdeos */
+    background-color: #9c3d42; 
+    transform: rotate(45deg);
+}
+
+@keyframes spin-wheel {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.intro-text {
+    /* Color Crema para contraste */
+    color: #FEFBF2;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.1rem;
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 40px;
+    max-width: 80%;
+}
+
+.intro-btn {
+    padding: 12px 35px;
+    /* Borde y texto en Crema */
+    border: 2px solid #FEFBF2;
+    background: transparent;
+    color: #FEFBF2;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    letter-spacing: 1px;
+}
+
+.intro-btn:hover {
+    /* Inversión de colores al hover */
+    background-color: #FEFBF2;
+    color: #9c3d42;
+    /* Estela de luz pálida */
+    box-shadow: 0 0 15px rgba(254, 251, 242, 0.5);
+}
+
 /* === MECÁNICA DE TRANSICIÓN === */
 .transition-glow {
     position: fixed;
@@ -404,7 +485,7 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index
 .mechanic-card h3 { 
     color: #9c3d42; 
     font-family: 'Syne', sans-serif; 
-    font-size: 1.15rem; 
+    font-size: 1rem; 
     margin-bottom: 15px; 
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -705,7 +786,7 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index
 /* === TIPOGRAFÍA RESTAURADA DE CITA (Large scale Syne Bold) === */
 .conclusion-block { margin-top: 40px; text-align: center; }
 .conclusion-block p {
-    font-size: 3rem; /* Gran escala como el Dev Name */
+    font-size: 2rem; /* Se redujo de 3rem a 2rem */
     font-weight: 700; /* Negrita Syne */
     font-family: 'Syne', sans-serif; /* Syne font */
     color: #9c3d42; /* Cita color */
