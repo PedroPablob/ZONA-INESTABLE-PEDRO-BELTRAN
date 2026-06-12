@@ -1,35 +1,33 @@
-// --- Elementos de Audio e Interacción ---
+// --- Audio e Interacción Inicial ---
 const bgMusic = document.getElementById('bgMusic');
 let audioStarted = false;
 
-// --- LÓGICA DE LA PANTALLA DE INTRODUCCIÓN ---
-const introScreen = document.getElementById('introScreen');
 const btnAceptar = document.getElementById('btnAceptar');
-
 btnAceptar.addEventListener('click', () => {
-    // Ocultar la pantalla de advertencia
-    introScreen.classList.add('hidden');
-    
-    // Iniciar música automáticamente al aceptar si el botón de música está activo
+    document.getElementById('introScreen').classList.add('hidden');
+    document.body.classList.add('scroll-allowed');
     if (!audioStarted && bgMusic) {
-        const toggleMusica = document.getElementById('toggle-musica');
-        if (toggleMusica && toggleMusica.classList.contains('active')) {
-            bgMusic.play().catch(err => console.log("Autoplay bloqueado"));
+        const toggleSonido = document.getElementById('toggle-sonido');
+        if (toggleSonido && toggleSonido.classList.contains('active')) {
+            bgMusic.play().catch(e => console.log("Audio block"));
         }
         audioStarted = true;
     }
 });
 
-// --- Controles y Canvas (Fondo) ---
+// --- Controles Inferiores (Sonido) ---
 const toggles = document.querySelectorAll('.toggle-wrapper');
 toggles.forEach(t => {
     t.addEventListener('click', () => {
         t.classList.toggle('active');
         
-        // Lógica específica para el botón de música
-        if (t.id === 'toggle-musica' && bgMusic) {
+        if (t.id === 'toggle-sonido' && bgMusic) {
             if (t.classList.contains('active')) {
-                bgMusic.play().catch(e => console.log("Esperando interacción manual"));
+                const homeSection = document.getElementById('home');
+                const rect = homeSection.getBoundingClientRect();
+                if (rect.top >= -window.innerHeight / 2) {
+                    bgMusic.play().catch(e => console.log("Esperando interacción manual"));
+                }
             } else {
                 bgMusic.pause();
             }
@@ -37,71 +35,175 @@ toggles.forEach(t => {
     });
 });
 
-const canvas = document.getElementById('waveCanvas');
-const ctx = canvas.getContext('2d');
-let w, h, t = 0, intensity = 1;
-const waveColors = ['#9c3d42', '#b04f54', '#c36267'];
+// --- EFECTO CAÍDA LIBRE (SCROLL ACELERADO) ---
+function freeFallTo(targetId) {
+    const target = document.getElementById(targetId);
+    if (!target) return;
 
-function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
-window.addEventListener('resize', resize); resize();
+    const startPos = window.pageYOffset;
+    const targetPos = target.getBoundingClientRect().top + startPos;
+    const distance = targetPos - startPos;
+    let startTime = null;
 
-function draw() {
-    ctx.clearRect(0, 0, w, h);
-    waveColors.forEach((color, i) => {
-        ctx.beginPath();
-        ctx.fillStyle = color;
-        ctx.moveTo(0, h/2);
-        let amplitude = (50 + i * 30) * intensity; 
-        for(let x=0; x<=w; x++) { ctx.lineTo(x, h/2 + Math.sin(x*0.002 + t + i) * amplitude); }
-        ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.fill();
-    });
-    t += 0.02;
-    if (intensity > 1) { intensity -= 0.02; } else { intensity = 1; }
-    requestAnimationFrame(draw);
+    const duration = Math.min(1500, Math.max(800, distance / 2));
+
+    function animation(currentTime) {
+        if (startTime === null) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        
+        const progress = Math.min(timeElapsed / duration, 1);
+        const easeInQuint = progress * progress * progress * progress * progress;
+        
+        window.scrollTo(0, startPos + (distance * easeInQuint));
+
+        if (timeElapsed < duration) {
+            requestAnimationFrame(animation);
+        }
+    }
+    requestAnimationFrame(animation);
 }
-draw();
 
-document.querySelectorAll('.interactive-btn').forEach(btn => {
-    btn.addEventListener('click', () => { intensity = 2.5; });
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('data-target');
+        freeFallTo(targetId);
+    });
 });
 
-// --- Mecánica de Inestabilidad Tipográfica (GRAVITUD) ---
-const gravitudTitle = document.getElementById('gravitudTitle');
+document.querySelectorAll('.back-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+});
 
-const breakTextIntoSpans = (element) => {
-    const text = element.textContent;
-    element.innerHTML = ''; 
-    text.split('').forEach((char, index) => {
+// --- Intersection Observer para Música ---
+const homeObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        const toggleSonido = document.getElementById('toggle-sonido');
+        if (entry.isIntersecting) {
+            if (audioStarted && bgMusic && toggleSonido?.classList.contains('active')) {
+                bgMusic.play();
+            }
+        } else {
+            bgMusic?.pause();
+        }
+    });
+}, { threshold: 0.4 });
+homeObserver.observe(document.getElementById('home'));
+
+// --- Tipografía Inestable & Físicas de Demolición Balística ACELERADAS ---
+const gravitudTitle = document.getElementById('gravitudTitle');
+if(gravitudTitle) {
+    const text = gravitudTitle.textContent;
+    gravitudTitle.innerHTML = ''; 
+    text.split('').forEach((char, i) => {
         const span = document.createElement('span');
         span.textContent = char;
-        span.setAttribute('data-index', index); 
-        element.appendChild(span);
+        span.setAttribute('data-index', i); 
+        gravitudTitle.appendChild(span);
     });
 }
-if(gravitudTitle) breakTextIntoSpans(gravitudTitle); 
-
 const letterSpans = gravitudTitle?.querySelectorAll('span') || [];
 
-let isBlackoutMode = false; 
-let isFullyBlack = false;   
-let isReadyForFall = false; 
-let isFalling = false;      
+let clickFase = 0; 
+
+setInterval(() => {
+    if (clickFase === 0 && letterSpans.length > 0) {
+        const randomIndex = Math.floor(Math.random() * letterSpans.length);
+        const randomLetter = letterSpans[randomIndex];
+        
+        randomLetter.classList.add('letter-nudge');
+        setTimeout(() => { randomLetter.classList.remove('letter-nudge'); }, 800);
+    }
+}, 5000);
 
 gravitudTitle?.addEventListener('click', (e) => {
-    if (isReadyForFall && !isFalling) {
-        isFalling = true;
-        letterSpans.forEach(s => {
-            s.classList.remove('letter-blackened', 'letter-shadowed', 'letter-fading');
-        });
-        gravitudTitle.classList.add('title-fall');
-        document.getElementById('subtitleContainer').classList.add('subtitle-visible');
-        document.body.classList.add('scroll-allowed');
+    
+    // FASE 1: Inestabilidad Crítica (El blackout fluye de derecha a izquierda)
+    if (clickFase === 0) {
+        clickFase = 1;
+        gravitudTitle.style.animation = 'none';
+
+        // Las letras tiemblan intensamente una por una de derecha a izquierda
+        for (let i = letterSpans.length - 1; i >= 0; i--) {
+            const s = letterSpans[i];
+            const delay = (letterSpans.length - 1 - i) * 80; 
+            setTimeout(() => { s.classList.add('letter-blackened'); }, delay);
+        }
+
+    } 
+    // FASE 2: La Bola de Demolición (GOLPE EN EL EXTREMO DERECHO & EXPLOSIÓN RÁPIDA A LA IZQ)
+    else if (clickFase === 1) {
+        clickFase = 2;
+        const ball = document.getElementById('wreckingBall');
+        
+        ball.classList.add('swing-in');
+
+        // MOMENTO DEL IMPACTO (60% de 1.5s = 900ms exactos en la letra 'D')
+        setTimeout(() => {
+            
+            // Invertimos la lista para que la 'D' sea golpeada primero y la 'G' al final
+            const reversedLetters = [...letterSpans].reverse();
+
+            reversedLetters.forEach((s, i) => {
+                
+                // Efecto Dominó Ultra Rápido (30ms entre cada letra)
+                const delayExplosion = i * 30; 
+                
+                setTimeout(() => {
+                    s.style.color = '#1a0a0b'; 
+                    s.className = ''; 
+                    s.style.animation = 'none'; 
+                    
+                    // ! TRUCO DE REFLOW: Congela a la GPU y previene tirones en el DOM
+                    void s.offsetWidth; 
+                    
+                    // Animación individual de las letras reducida a 1.2s
+                    s.style.transition = 'transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1)';
+                    
+                    // CÁLCULO BALÍSTICO DE IMPACTO DERECHO
+                    // El golpe viene de la DERECHA, la metralla vuela fuerte hacia la IZQUIERDA (-) y ARRIBA (-)
+                    const dirX = -(Math.random() * 2000 + 1000); // 1000 a 3000px a la Izquierda
+                    const dirY = -(Math.random() * 1000 + 500);  // Salto violento arriba
+                    const endY = window.innerHeight + 1500;      // Caída al fondo del pozo
+                    
+                    const rotMid = (Math.random() - 0.5) * 1000;
+                    const rotEnd = rotMid + (Math.random() - 0.5) * 2000;
+                    const finalScale = Math.random() * 1.5 + 0.5;
+                    
+                    s.style.setProperty('--explode-x-mid', `${dirX * 0.4}px`); 
+                    s.style.setProperty('--explode-y-mid', `${dirY}px`);
+                    s.style.setProperty('--explode-rot-mid', `${rotMid}deg`);
+                    
+                    s.style.setProperty('--explode-x-end', `${dirX}px`);
+                    s.style.setProperty('--explode-y-end', `${endY}px`);
+                    s.style.setProperty('--explode-rot-end', `${rotEnd}deg`);
+                    s.style.setProperty('--explode-scale', finalScale);
+
+                    s.style.animation = `explode-letter 1.2s forwards`;
+                    
+                }, delayExplosion);
+            });
+
+            // Transición veloz a la siguiente pantalla sin perder tiempo
+            setTimeout(() => {
+                const transScreen = document.getElementById('transitionScreen');
+                transScreen.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    window.location.href = 'experimento.html'; 
+                }, 2000);
+
+            }, 1000); 
+
+        }, 900); // El milisegundo exacto del impacto calculado desde el CSS (1.5s * 0.6)
     }
 });
 
 letterSpans.forEach(span => {
     span.addEventListener('mouseover', (e) => {
-        if(!isBlackoutMode && !isFullyBlack && !isFalling) {
+        if(clickFase === 0) {
             e.target.classList.remove('letter-fading');
             e.target.style.transitionDelay = '0s'; 
             e.target.classList.add('letter-shadowed');
@@ -109,165 +211,32 @@ letterSpans.forEach(span => {
     });
     
     span.addEventListener('mouseout', (e) => {
-        if(!isBlackoutMode && !isFullyBlack && !isFalling) {
-            const target = e.target;
-            const index = parseInt(target.dataset.index);
-
-            target.classList.remove('letter-shadowed');
-            target.classList.add('letter-fading');
-            target.style.transitionDelay = (index * 0.15) + 's'; 
-
+        if(clickFase === 0) {
+            e.target.classList.remove('letter-shadowed');
+            e.target.classList.add('letter-fading');
+            e.target.style.transitionDelay = (e.target.dataset.index * 0.15) + 's'; 
             setTimeout(() => {
-                target.classList.remove('letter-fading');
-                target.style.transitionDelay = '0s';
-            }, (index * 150) + 1500);
-        }
-    });
-
-    span.addEventListener('click', (e) => {
-        if (isFalling) return; 
-
-        const targetLetter = e.target;
-        const selfIndex = parseInt(targetLetter.dataset.index);
-
-        if (e.detail === 1) {
-            intensity = 2.5; 
-            if (isBlackoutMode || isFullyBlack) return; 
-            targetLetter.classList.add('letter-shake-single');
-            setTimeout(() => { targetLetter.classList.remove('letter-shake-single'); }, 300);
-
-        } else if (e.detail === 2) {
-            intensity = 2.5; 
-            if (isReadyForFall || isFalling) return; 
-
-            isBlackoutMode = true;
-            let maxDelay = 0;
-
-            letterSpans.forEach((s, idx) => {
-                const distance = Math.abs(idx - selfIndex);
-                const delay = distance * 100; 
-                if (delay > maxDelay) maxDelay = delay;
-                setTimeout(() => { s.classList.add('letter-blackened'); }, delay);
-            });
-
-            setTimeout(() => {
-                isFullyBlack = true;
-                isReadyForFall = true; 
-                isBlackoutMode = false; 
-            }, maxDelay + 100);
+                e.target.classList.remove('letter-fading');
+                e.target.style.transitionDelay = '0s';
+            }, (e.target.dataset.index * 150) + 1500);
         }
     });
 });
 
-// --- ANIMACIÓN DE EXPANSIÓN Y NAVEGACIÓN ---
-const transitionGlow = document.getElementById('transitionGlow');
-const navLinks = document.querySelectorAll('.nav-link');
-
-navLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        // Pausar la música al entrar a una nueva sección
-        if (bgMusic) bgMusic.pause();
-
-        const targetId = link.getAttribute('data-target');
-        
-        transitionGlow.classList.add('expanding');
-
-        setTimeout(() => {
-            document.getElementById('home').classList.remove('active-screen');
-            document.querySelectorAll('.screen').forEach(s => {
-                s.style.display = 'none';
-                s.classList.remove('animate-fall'); 
-            });
-            
-            const nextScreen = document.getElementById('screen-' + targetId);
-            nextScreen.style.display = 'flex';
-            
-            void nextScreen.offsetHeight;
-            nextScreen.classList.add('animate-fall'); 
-            
-            transitionGlow.classList.remove('expanding');
-        }, 1200);
+// --- Observer para Animaciones de Scroll ---
+const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
     });
-});
+}, { threshold: 0.15 });
+document.querySelectorAll('.scroll-anim').forEach(el => scrollObserver.observe(el));
 
-// Volver a la pantalla principal reseteando los estados de animación
-document.querySelectorAll('.back-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        
-        // Reanudar la música al volver, solo si el toggle está activo
-        const toggleMusica = document.getElementById('toggle-musica');
-        if (bgMusic && toggleMusica && toggleMusica.classList.contains('active') && audioStarted) {
-            bgMusic.play().catch(e => console.log("Autoplay bloqueado"));
-        }
-
-        transitionGlow.classList.add('expanding');
-        
-        setTimeout(() => {
-            document.querySelectorAll('.screen').forEach(s => {
-                s.style.display = 'none';
-                s.classList.remove('animate-fall'); 
-            });
-            
-            const homeScreen = document.getElementById('home');
-            homeScreen.classList.add('active-screen');
-            homeScreen.style.display = 'block';
-            
-            transitionGlow.classList.remove('expanding');
-        }, 1200);
-
-        setTimeout(() => {
-            document.querySelectorAll('.scrollable-screen').forEach(screen => {
-                screen.scrollTop = 0;
-            });
-        }, 1000); 
-    });
-});
-
-// --- Botón Secreto Sandbox ---
-const sunHitArea = document.getElementById('sunHitArea');
-const sandboxSecret = document.getElementById('sandboxSecret');
-
-sunHitArea.addEventListener('click', () => {
-    sandboxSecret.classList.toggle('sandbox-revealed');
-    intensity = sandboxSecret.classList.contains('sandbox-revealed') ? 2.0 : 1.0;
-});
-
-// --- ANIMACIÓN DE SCROLL EN PANTALLAS COMPATIBLES ---
-const observeScrollableScreen = (screenId) => {
-    const screenElement = document.getElementById(screenId);
-    if (!screenElement) return;
-
-    const observerOptions = {
-        root: screenElement, 
-        rootMargin: '0px',
-        threshold: 0.15 
-    };
-
-    const scrollObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            }
-        });
-    }, observerOptions);
-
-    screenElement.querySelectorAll('.scroll-anim').forEach(el => {
-        scrollObserver.observe(el);
-    });
-};
-
-observeScrollableScreen('screen-referencia');
-observeScrollableScreen('screen-concepto');
-
-// --- LÓGICA DEL MODAL DE VIDEO ---
+// --- Modal de Video ---
 const videoModal = document.getElementById('videoModal');
 const modalVideo = document.getElementById('modalVideo');
 const closeModalBtn = document.getElementById('closeModal');
-const mechanicCards = document.querySelectorAll('.interactive-card');
 
-mechanicCards.forEach(card => {
+document.querySelectorAll('.interactive-card').forEach(card => {
     card.addEventListener('click', () => {
         const videoSrc = card.getAttribute('data-video');
         if (videoSrc) {
@@ -278,15 +247,8 @@ mechanicCards.forEach(card => {
     });
 });
 
-videoModal?.addEventListener('click', (e) => {
-    if (e.target === videoModal) {
-        closeVideo();
-    }
-});
-
-if(closeModalBtn) {
-    closeModalBtn.addEventListener('click', closeVideo);
-}
+videoModal?.addEventListener('click', (e) => { if (e.target === videoModal) closeVideo(); });
+if(closeModalBtn) closeModalBtn.addEventListener('click', closeVideo);
 
 function closeVideo() {
     videoModal.classList.remove('active');
@@ -294,73 +256,46 @@ function closeVideo() {
     modalVideo.currentTime = 0; 
 }
 
-// --- INTERACCIÓN DE PIEZAS 3D TALLER (COLOR CHANGE BY CLICK) ---
-const paletaColores = [
-    '#8C2041', // Burdeos
-    '#FEFBF2', // Crema
-    '#A6DDE5', // Cian
-    '#F5BEBF'  // Rosa
-];
-
-const piezaEstandar = document.getElementById('piezaEstandar');
-const piezaEspecial = document.getElementById('piezaEspecial');
-
+// --- Colores Piezas 3D ---
+const paletaColores = ['#8C2041', '#FEFBF2', '#A6DDE5', '#F5BEBF'];
 function activarCambioColor(elemento) {
     if (!elemento) return;
     let currentColorIndex = elemento.id === 'piezaEspecial' ? 2 : 0; 
-
     elemento.parentElement.addEventListener('click', () => {
         currentColorIndex = (currentColorIndex + 1) % paletaColores.length;
         elemento.style.setProperty('--piece-color', paletaColores[currentColorIndex]);
     });
 }
+activarCambioColor(document.getElementById('piezaEstandar'));
+activarCambioColor(document.getElementById('piezaEspecial'));
 
-activarCambioColor(piezaEstandar);
-activarCambioColor(piezaEspecial);
-
-// --- EFECTO ESTELA CIAN EN EL NOMBRE DEL DESARROLLADOR ---
-const devNameLines = document.querySelectorAll('.dev-name-line');
-
-devNameLines.forEach(line => {
+// --- Efecto Nombre ---
+document.querySelectorAll('.dev-name-line').forEach(line => {
     const nameText = line.textContent;
     line.innerHTML = ''; 
-    
     nameText.split('').forEach((char, index) => {
         const span = document.createElement('span');
-        if (char === ' ') {
-            span.innerHTML = '&nbsp;';
-        } else {
-            span.textContent = char;
-        }
+        span.innerHTML = char === ' ' ? '&nbsp;' : char;
         span.setAttribute('data-index', index); 
         span.style.display = 'inline-block';
         span.style.transition = 'color 0.15s ease-out, text-shadow 0.15s ease-out';
         line.appendChild(span);
     });
 
-    const devLetterSpans = line.querySelectorAll('span');
-
-    devLetterSpans.forEach(span => {
+    line.querySelectorAll('span').forEach(span => {
         span.addEventListener('mouseover', (e) => {
-            const target = e.target;
-            target.classList.remove('name-letter-fading');
-            target.style.transitionDelay = '0s'; 
-            target.classList.add('name-letter-hovered');
+            e.target.classList.remove('name-letter-fading');
+            e.target.style.transitionDelay = '0s'; 
+            e.target.classList.add('name-letter-hovered');
         });
-        
         span.addEventListener('mouseout', (e) => {
-            const target = e.target;
-            const index = parseInt(target.dataset.index);
-
-            target.classList.remove('name-letter-hovered');
-            target.classList.add('name-letter-fading');
-            
-            target.style.transitionDelay = (index * 0.05) + 's'; 
-
+            e.target.classList.remove('name-letter-hovered');
+            e.target.classList.add('name-letter-fading');
+            e.target.style.transitionDelay = (e.target.dataset.index * 0.05) + 's'; 
             setTimeout(() => {
-                target.classList.remove('name-letter-fading');
-                target.style.transitionDelay = '0s';
-            }, (index * 50) + 1500);
+                e.target.classList.remove('name-letter-fading');
+                e.target.style.transitionDelay = '0s';
+            }, (e.target.dataset.index * 50) + 1500);
         });
     });
 });

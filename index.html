@@ -13,6 +13,7 @@
 </head>
 <body>
 
+    <!-- PANTALLA DE CARGA INICIAL -->
     <div class="intro-screen" id="introScreen">
         <div class="intro-hex">
             <div class="intro-hole"></div>
@@ -21,51 +22,55 @@
         <button class="intro-btn" id="btnAceptar">ACEPTAR</button>
     </div>
 
-    <div class="transition-glow" id="transitionGlow"></div>
-
-    <div class="screen screen-1 active-screen" id="home">
-        <canvas id="waveCanvas"></canvas>
-
-        <div class="container">
-            <div class="top-controls">
-                <div class="toggle-wrapper interactive-btn active" id="toggle-musica">
-                    <div class="toggle-switch"><div class="toggle-knob"></div></div>
-                    <span>Música</span>
-                </div>
-                <div class="toggle-wrapper interactive-btn active" id="toggle-efectos">
-                    <div class="toggle-switch"><div class="toggle-knob"></div></div>
-                    <span>Efectos</span>
-                </div>
-            </div>
-
-            <div class="sun-menu" id="sun-menu">
-                <a href="#" class="nav-link interactive-btn concepto" data-target="concepto">EL<br>CONCEPTO</a>
-                <a href="#" class="nav-link interactive-btn experimental" data-target="experimental">LO<br>EXPERIMENTAL</a>
-                <a href="#" class="nav-link interactive-btn referencia" data-target="referencia">LA<br>REFERENCIA</a>
-                
-                <div class="hit-area" id="sunHitArea"></div>
-            </div>
-
-            <div class="main-title-container">
-                <h1 class="main-title" id="gravitudTitle">GRAVITUD</h1>
-                
-                <div class="subtitle-container" id="subtitleContainer">
-                    <p class="subtitle">Bienvenido a la experiencia, desliza para continuar</p>
-                </div>
-            </div>
-
-            <div class="sandbox-container" id="sandboxSecret">
-                <img src="Sandbox.png" alt="Sandbox Icon" class="sandbox-icon">
-            </div>
+    <!-- PANTALLA DE TRANSICIÓN (HACIA EL EXPERIMENTO) -->
+    <div class="intro-screen hidden" id="transitionScreen">
+        <div class="intro-hex">
+            <div class="intro-hole"></div>
         </div>
     </div>
 
-    <div class="screen new-section scrollable-screen" id="screen-concepto">
+    <!-- GRÚA DE DEMOLICIÓN (PÉNDULO REAL Y LIMPIO) -->
+    <div class="crane-container" id="wreckingBall">
+        <div class="crane-chain"></div>
+        <div class="crane-ring"></div>
+        <div class="crane-ball"></div>
+    </div>
+
+    <!-- PANTALLA 0: INICIO -->
+    <div class="screen home-grid" id="home">
+        
+        <!-- Capa de Patrón Expandible Unificada -->
+        <div id="bg-patterns" class="bg-patterns-container"></div>
+
+        <nav class="main-nav">
+            <a href="#concepto" class="nav-link nav-concepto" data-target="concepto">juego de mesa</a>
+            <a href="#experimental" class="nav-link nav-experimental" data-target="experimental">fundamento</a>
+            <a href="#referencia" class="nav-link nav-referencia" data-target="referencia">referencias</a>
+        </nav>
+
+        <div class="main-title-container">
+            <h1 class="main-title" id="gravitudTitle">GRAVITUD</h1>
+            <div class="subtitle-container" id="subtitleContainer">
+                <p class="subtitle">Bienvenido a la experiencia, desliza para continuar</p>
+            </div>
+        </div>
+
+        <div class="bottom-controls">
+            <div class="toggle-wrapper active" id="toggle-sonido">
+                <div class="toggle-switch"><div class="toggle-knob"></div></div>
+                <span>Sonido</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PANTALLA 1: JUEGO DE MESA -->
+    <div class="new-section scrollable-screen" id="concepto">
         
         <div class="ref-container" style="padding-bottom: 20px;">
-            <div class="ref-title">
-                <span>EL</span>
-                <span>CONCEPTO</span>
+            <div class="ref-title scroll-anim">
+                <span>juego de</span>
+                <span>mesa</span>
             </div>
         </div>
 
@@ -213,17 +218,23 @@
         </div>
     </div>
 
-    <div class="screen new-section scrollable-screen" id="screen-experimental">
-        <h1>LO EXPERIMENTAL</h1>
-        <button class="back-btn">VOLVER AL INICIO</button>
+    <!-- PANTALLA 2: FUNDAMENTO -->
+    <div class="new-section scrollable-screen" id="experimental" style="padding: 100px 20px;">
+        <div class="ref-container">
+            <div class="ref-title scroll-anim">
+                <span>funda-</span>
+                <span>mento</span>
+            </div>
+        </div>
+        <button class="back-btn ref-back-btn">VOLVER AL INICIO</button>
     </div>
 
-    <div class="screen new-section scrollable-screen" id="screen-referencia">
+    <!-- PANTALLA 3: REFERENCIAS -->
+    <div class="new-section scrollable-screen" id="referencia">
         
         <div class="ref-container" style="padding-bottom: 20px;">
-            <div class="ref-title">
-                <span>LA</span>
-                <span>REFERENCIA</span>
+            <div class="ref-title scroll-anim">
+                <span>referencias</span>
             </div>
         </div>
 
@@ -274,11 +285,6 @@
                         <span class="tool-label">GitHub</span>
                     </div>
                 </div>
-            </div>
-
-            <div class="ref-block scroll-anim conclusion-block">
-                <h2>CONCLUSIÓN</h2>
-                <p>"La interacción no es simplemente mover un elemento en la pantalla; es perturbar el equilibrio de un sistema que responde con su propia gravedad."</p>
             </div>
 
             <div class="ref-block scroll-anim credits-block">
