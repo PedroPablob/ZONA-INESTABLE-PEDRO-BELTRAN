@@ -7,45 +7,52 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
+
+    <script>
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, 0);
+    </script>
 </head>
 <body>
 
-    <!-- PANTALLA DE CARGA INICIAL -->
     <div class="intro-screen" id="introScreen">
         <div class="intro-hex">
             <div class="intro-hole"></div>
         </div>
         <p class="intro-text">Este sitio contiene música y efectos de sonido.<br>Se recomienda discreción y revisar tu volumen antes de iniciar.</p>
-        <button class="intro-btn" id="btnAceptar">ACEPTAR</button>
+        <button class="intro-btn" id="btnAceptar">Aceptar</button>
     </div>
 
-    <!-- PANTALLA DE TRANSICIÓN (HACIA EL EXPERIMENTO) -->
     <div class="intro-screen hidden" id="transitionScreen">
         <div class="intro-hex">
             <div class="intro-hole"></div>
         </div>
     </div>
 
-    <!-- GRÚA DE DEMOLICIÓN (PÉNDULO REAL Y LIMPIO) -->
+    <div class="section-indicator" id="sectionIndicator">
+        <span class="indicator-text" id="indicatorText"></span>
+        <div class="indicator-tooltip" id="indicatorTooltip">Haz clic sobre el título para volver al inicio</div>
+    </div>
+
     <div class="crane-container" id="wreckingBall">
         <div class="crane-chain"></div>
         <div class="crane-ring"></div>
         <div class="crane-ball"></div>
     </div>
 
-    <!-- PANTALLA 0: INICIO -->
     <div class="screen home-grid" id="home">
         
-        <!-- Capa de Patrón Expandible Unificada -->
         <div id="bg-patterns" class="bg-patterns-container"></div>
 
         <nav class="main-nav">
-            <a href="#concepto" class="nav-link nav-concepto" data-target="concepto">juego de mesa</a>
-            <a href="#experimental" class="nav-link nav-experimental" data-target="experimental">fundamento</a>
-            <a href="#referencia" class="nav-link nav-referencia" data-target="referencia">referencias</a>
+            <a href="#target-concepto" class="nav-link nav-concepto" data-target="target-concepto">Juego de mesa</a>
+            <a href="#experimental" class="nav-link nav-experimental" data-target="experimental">Fundamento</a>
+            <a href="#target-referencias" class="nav-link nav-referencia" data-target="target-referencias">Referencias</a>
         </nav>
 
         <div class="main-title-container">
@@ -64,13 +71,11 @@
 
     </div>
 
-    <!-- PANTALLA 1: JUEGO DE MESA -->
     <div class="new-section scrollable-screen" id="concepto">
         
-        <div class="ref-container" style="padding-bottom: 20px;">
+        <div class="ref-container" id="target-concepto">
             <div class="ref-title scroll-anim">
-                <span>juego de</span>
-                <span>mesa</span>
+                <span>Juego de mesa</span>
             </div>
         </div>
 
@@ -79,8 +84,8 @@
             <p>Zona Inestable es un juego de mesa que explora las leyes de la física a través de un sistema de estructuras modulares y piezas hexagonales suspendidas. El juego propone una experiencia de tensión constante donde cada jugador altera el centro de masa y la estabilidad del tablero a través del peso y el posicionamiento de los componentes.</p>
         </div>
 
-        <div class="qr-showcase scroll-anim" style="padding: 40px; border-radius: 40px; margin-bottom: 0; display: flex; align-items: center; justify-content: center;">
-            <img src="juego de mesa.png" alt="Tablero Zona Inestable" style="width: 50%; display: block; margin: 0 auto; border-radius: 20px;">
+        <div class="qr-showcase scroll-anim image-showcase-container">
+            <img src="juego de mesa.png" alt="Tablero Zona Inestable" class="responsive-board-img">
         </div>
 
         <div class="ref-container" style="padding-top: 40px;">
@@ -213,28 +218,22 @@
             <div class="ref-block scroll-anim conclusion-block">
                 <p>"Esta interacción de fuerzas tangibles y mecánicas es el fundamento físico que da origen a la abstracción digital y sensorial de GRAVITUD."</p>
             </div>
-
-            <button class="back-btn ref-back-btn">VOLVER AL INICIO</button>
         </div>
     </div>
 
-    <!-- PANTALLA 2: FUNDAMENTO -->
     <div class="new-section scrollable-screen" id="experimental" style="padding: 100px 20px;">
         <div class="ref-container">
             <div class="ref-title scroll-anim">
-                <span>funda-</span>
-                <span>mento</span>
+                <span>Fundamento</span>
             </div>
         </div>
-        <button class="back-btn ref-back-btn">VOLVER AL INICIO</button>
     </div>
 
-    <!-- PANTALLA 3: REFERENCIAS -->
     <div class="new-section scrollable-screen" id="referencia">
         
-        <div class="ref-container" style="padding-bottom: 20px;">
+        <div class="ref-container" id="target-referencias">
             <div class="ref-title scroll-anim">
-                <span>referencias</span>
+                <span>Referencias</span>
             </div>
         </div>
 
@@ -245,14 +244,14 @@
                 </a>
                 <div class="qr-text" style="align-items: flex-start; text-align: left;">
                     <p>Explora el origen de Zona Inestable, el juego de mesa que inspiró esta experiencia, y descubre las mecánicas que definen su gravedad.</p>
-                    <span class="scan-text">ESCANEA AQUI!</span>
+                    <span class="scan-text">¡ESCANEA AQUÍ!</span>
                 </div>
             </div>
 
             <div class="qr-row">
                 <div class="qr-text" style="align-items: flex-end; text-align: right;">
                     <p>Sumérgete en el desarrollo de Gravitud: conoce el proceso creativo, técnico y experimental detrás de esta pieza interactiva.</p>
-                    <span class="scan-text">ESCANEA AQUI!</span>
+                    <span class="scan-text">¡ESCANEA AQUÍ!</span>
                 </div>
                 <a href="https://wiki.ead.pucv.cl/U3_Taller_IxD_-_Pedro_Beltr%C3%A1n" target="_blank" class="qr-box-mockup">
                     <img src="QR Web.png" alt="QR Web">
@@ -288,18 +287,18 @@
             </div>
 
             <div class="ref-block scroll-anim credits-block">
-                <h3>DESARROLLADO POR</h3>
+                <h3>Desarrollado por</h3>
                 <a href="https://wiki.ead.pucv.cl/Pedro_Beltr%C3%A1n" target="_blank" class="dev-name-container">
                     <span class="dev-name-line">Pedro Pablo</span>
                     <span class="dev-name-line">Beltrán Silva</span>
                 </a>
                 <p class="dev-context">Taller de Diseño de Interacción 2026</p>
 
-                <h3 class="docentes-title">DOCENTES DEL TALLER</h3>
+                <h3 class="docentes-title">Docentes del taller</h3>
                 <p class="teachers-names">Javiera Ruiz — Katherine Exss</p>
             </div>
 
-            <button class="back-btn ref-back-btn">VOLVER AL INICIO</button>
+            <button class="back-btn ref-back-btn" id="finalBackBtn">Volver al inicio</button>
         </div>
     </div>
 

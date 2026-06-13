@@ -1,3 +1,11 @@
+// --- FORZAR EL SCROLL AL INICIO AL RECARGAR PÁGINA ---
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+window.addEventListener('load', () => {
+    window.scrollTo(0, 0);
+});
+
 // --- Audio e Interacción Inicial ---
 const bgMusic = document.getElementById('bgMusic');
 let audioStarted = false;
@@ -35,50 +43,98 @@ toggles.forEach(t => {
     });
 });
 
-// --- EFECTO CAÍDA LIBRE (SCROLL ACELERADO) ---
-function freeFallTo(targetId) {
-    const target = document.getElementById(targetId);
-    if (!target) return;
-
-    const startPos = window.pageYOffset;
-    const targetPos = target.getBoundingClientRect().top + startPos;
-    const distance = targetPos - startPos;
-    let startTime = null;
-
-    const duration = Math.min(1500, Math.max(800, distance / 2));
-
-    function animation(currentTime) {
-        if (startTime === null) startTime = currentTime;
-        const timeElapsed = currentTime - startTime;
-        
-        const progress = Math.min(timeElapsed / duration, 1);
-        const easeInQuint = progress * progress * progress * progress * progress;
-        
-        window.scrollTo(0, startPos + (distance * easeInQuint));
-
-        if (timeElapsed < duration) {
-            requestAnimationFrame(animation);
-        }
-    }
-    requestAnimationFrame(animation);
-}
-
+// --- NAVEGACIÓN DESDE EL MENÚ PRINCIPAL ---
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
         const targetId = link.getAttribute('data-target');
-        freeFallTo(targetId);
+        const targetElement = document.getElementById(targetId);
+        
+        if (targetElement) {
+            targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
     });
 });
 
+// --- BOTÓN FINAL: VOLVER AL INICIO ---
 document.querySelectorAll('.back-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 });
 
+// --- LÓGICA DEL INDICADOR DE SECCIÓN Y TOOLTIP ---
+const sectionIndicator = document.getElementById('sectionIndicator');
+const indicatorText = document.getElementById('indicatorText');
+const indicatorTooltip = document.getElementById('indicatorTooltip');
+
+let currentSectionName = '';
+let hasSeenTooltip = false; 
+
+sectionIndicator.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    indicatorTooltip.classList.remove('show-tooltip'); 
+});
+
+const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const sectionId = entry.target.id;
+            let newText = '';
+            
+            if (sectionId === 'concepto') newText = 'Juego de mesa';
+            if (sectionId === 'experimental') newText = 'Fundamento';
+            if (sectionId === 'referencia') newText = 'Referencias';
+
+            if (newText !== currentSectionName && newText !== '') {
+                sectionIndicator.classList.add('visible');
+                
+                if (!hasSeenTooltip) {
+                    indicatorTooltip.classList.add('show-tooltip');
+                    hasSeenTooltip = true;
+                    setTimeout(() => {
+                        indicatorTooltip.classList.remove('show-tooltip');
+                    }, 4000);
+                }
+
+                if (indicatorText.textContent === '') {
+                    indicatorText.textContent = newText;
+                } else {
+                    indicatorText.classList.add('animating-out');
+                    setTimeout(() => {
+                        indicatorText.textContent = newText;
+                        indicatorText.classList.remove('animating-out');
+                        indicatorText.classList.add('animating-in');
+                        void indicatorText.offsetWidth; 
+                        indicatorText.classList.remove('animating-in');
+                    }, 300); 
+                }
+                currentSectionName = newText;
+            }
+        }
+    });
+}, { 
+    rootMargin: "-20% 0px -75% 0px", 
+    threshold: 0 
+});
+
+document.querySelectorAll('.new-section').forEach(sec => {
+    sectionObserver.observe(sec);
+});
+
+window.addEventListener('scroll', () => {
+    if (window.scrollY < window.innerHeight * 0.5) {
+        sectionIndicator.classList.remove('visible');
+        currentSectionName = '';
+        indicatorTooltip.classList.remove('show-tooltip'); 
+    }
+});
+
 // --- Intersection Observer para Música ---
-const homeObserver = new IntersectionObserver((entries) => {
+const homeAudioObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         const toggleSonido = document.getElementById('toggle-sonido');
         if (entry.isIntersecting) {
@@ -90,9 +146,9 @@ const homeObserver = new IntersectionObserver((entries) => {
         }
     });
 }, { threshold: 0.4 });
-homeObserver.observe(document.getElementById('home'));
+homeAudioObserver.observe(document.getElementById('home'));
 
-// --- Tipografía Inestable & Físicas de Demolición Balística ACELERADAS ---
+// --- Tipografía Inestable & Físicas de Demolición ---
 const gravitudTitle = document.getElementById('gravitudTitle');
 if(gravitudTitle) {
     const text = gravitudTitle.textContent;
@@ -105,7 +161,6 @@ if(gravitudTitle) {
     });
 }
 const letterSpans = gravitudTitle?.querySelectorAll('span') || [];
-
 let clickFase = 0; 
 
 setInterval(() => {
@@ -119,13 +174,10 @@ setInterval(() => {
 }, 5000);
 
 gravitudTitle?.addEventListener('click', (e) => {
-    
-    // FASE 1: Inestabilidad Crítica (El blackout fluye de derecha a izquierda)
     if (clickFase === 0) {
         clickFase = 1;
         gravitudTitle.style.animation = 'none';
 
-        // Las letras tiemblan intensamente una por una de derecha a izquierda
         for (let i = letterSpans.length - 1; i >= 0; i--) {
             const s = letterSpans[i];
             const delay = (letterSpans.length - 1 - i) * 80; 
@@ -133,40 +185,29 @@ gravitudTitle?.addEventListener('click', (e) => {
         }
 
     } 
-    // FASE 2: La Bola de Demolición (GOLPE EN EL EXTREMO DERECHO & EXPLOSIÓN RÁPIDA A LA IZQ)
     else if (clickFase === 1) {
         clickFase = 2;
         const ball = document.getElementById('wreckingBall');
         
         ball.classList.add('swing-in');
 
-        // MOMENTO DEL IMPACTO (60% de 1.5s = 900ms exactos en la letra 'D')
         setTimeout(() => {
-            
-            // Invertimos la lista para que la 'D' sea golpeada primero y la 'G' al final
             const reversedLetters = [...letterSpans].reverse();
 
             reversedLetters.forEach((s, i) => {
-                
-                // Efecto Dominó Ultra Rápido (30ms entre cada letra)
                 const delayExplosion = i * 30; 
                 
                 setTimeout(() => {
                     s.style.color = '#1a0a0b'; 
                     s.className = ''; 
                     s.style.animation = 'none'; 
-                    
-                    // ! TRUCO DE REFLOW: Congela a la GPU y previene tirones en el DOM
                     void s.offsetWidth; 
                     
-                    // Animación individual de las letras reducida a 1.2s
                     s.style.transition = 'transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1)';
                     
-                    // CÁLCULO BALÍSTICO DE IMPACTO DERECHO
-                    // El golpe viene de la DERECHA, la metralla vuela fuerte hacia la IZQUIERDA (-) y ARRIBA (-)
-                    const dirX = -(Math.random() * 2000 + 1000); // 1000 a 3000px a la Izquierda
-                    const dirY = -(Math.random() * 1000 + 500);  // Salto violento arriba
-                    const endY = window.innerHeight + 1500;      // Caída al fondo del pozo
+                    const dirX = -(Math.random() * 2000 + 1000); 
+                    const dirY = -(Math.random() * 1000 + 500);  
+                    const endY = window.innerHeight + 1500;      
                     
                     const rotMid = (Math.random() - 0.5) * 1000;
                     const rotEnd = rotMid + (Math.random() - 0.5) * 2000;
@@ -186,7 +227,6 @@ gravitudTitle?.addEventListener('click', (e) => {
                 }, delayExplosion);
             });
 
-            // Transición veloz a la siguiente pantalla sin perder tiempo
             setTimeout(() => {
                 const transScreen = document.getElementById('transitionScreen');
                 transScreen.classList.remove('hidden');
@@ -197,7 +237,7 @@ gravitudTitle?.addEventListener('click', (e) => {
 
             }, 1000); 
 
-        }, 900); // El milisegundo exacto del impacto calculado desde el CSS (1.5s * 0.6)
+        }, 900); 
     }
 });
 
@@ -257,10 +297,12 @@ function closeVideo() {
 }
 
 // --- Colores Piezas 3D ---
-const paletaColores = ['#8C2041', '#FEFBF2', '#A6DDE5', '#F5BEBF'];
+const paletaColores = ['#8C2041', '#A6DDE5', '#FEFBF2', '#F5BEBF']; 
 function activarCambioColor(elemento) {
     if (!elemento) return;
-    let currentColorIndex = elemento.id === 'piezaEspecial' ? 2 : 0; 
+    
+    let currentColorIndex = 0; 
+    
     elemento.parentElement.addEventListener('click', () => {
         currentColorIndex = (currentColorIndex + 1) % paletaColores.length;
         elemento.style.setProperty('--piece-color', paletaColores[currentColorIndex]);
@@ -299,3 +341,29 @@ document.querySelectorAll('.dev-name-line').forEach(line => {
         });
     });
 });
+
+// --- LÓGICA DE ENSAMBLE: PIEZAS INFERIORES ---
+const bottomPiecesContainer = document.querySelector('.bottom-pieces');
+const platformItem = document.querySelector('.platform-item');
+const pillarItem = document.querySelector('.pillar-item');
+const baseItem = document.querySelector('.base-item');
+
+if (bottomPiecesContainer && platformItem && pillarItem && baseItem) {
+    let isAssembled = false;
+    
+    const toggleAssembly = () => {
+        isAssembled = !isAssembled;
+        if (isAssembled) {
+            bottomPiecesContainer.classList.add('is-assembled');
+        } else {
+            bottomPiecesContainer.classList.remove('is-assembled');
+        }
+    };
+
+    [platformItem, pillarItem, baseItem].forEach(item => {
+        const scene = item.querySelector('.scene3d');
+        if (scene) {
+            scene.addEventListener('click', toggleAssembly);
+        }
+    });
+}
