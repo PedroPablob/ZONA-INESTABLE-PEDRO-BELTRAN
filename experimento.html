@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gravitud - Experimento Físico</title>
+    <title>Gravitud - Experimento físico</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,83 +15,83 @@
 
     <a href="index.html" class="back-home">Volver al inicio</a>
     
-    <button id="btn-help" class="help-btn">AYUDA (H)</button>
+    <button id="btn-help" class="help-btn">Ayuda (H)</button>
 
     <div class="ui-container">
-        <h2 id="ruleta-status">ESTABILIDAD NORMAL</h2>
+        <h2 id="ruleta-status">Estabilidad normal</h2>
         <p id="instruccion-juego">No dejes caer tu color prohibido.</p>
     </div>
 
-    <div class="level-indicator" id="level-indicator">NIVEL 1</div>
-    <div class="score-counter" id="score-counter">PUNTOS: 0</div>
+    <div class="level-indicator" id="level-indicator">Nivel 1</div>
+    <div class="score-counter" id="score-counter">Puntos: 0</div>
 
     <div id="intro-screen" class="overlay-screen">
         <div class="overlay-box">
-            <h2>GIRANDO RULETA...</h2>
+            <h2>Girando ruleta...</h2>
             <p>El color que te toque, será tu responsabilidad.<br>Si tiras una pieza de este color al vacío, pierdes.</p>
             <div class="ruleta-color-container">
                 <div id="ruleta-color-box"></div>
                 <h3 id="ruleta-color-name">???</h3>
             </div>
-            <button id="btn-start" style="opacity: 0; pointer-events: none;">COMENZAR NIVEL 1</button>
+            <button id="btn-start" style="opacity: 0; pointer-events: none;">Comenzar nivel 1</button>
         </div>
     </div>
 
     <div id="help-screen" class="overlay-screen" style="display: none; opacity: 0; z-index: 3000;">
         <div class="overlay-box help-box">
-            <h2>MANUAL DE GRAVITUD</h2>
+            <h2>¿Cómo jugar?</h2>
             <div class="help-content">
                 <div class="help-item">
                     <div class="h-icon icon-bola"></div>
-                    <div class="h-text"><strong>Tu Caña:</strong> Eres el círculo negro. Muévelo con el ratón para empujar las fichas enemigas al vacío.</div>
+                    <div class="h-text"><strong>Tu caña:</strong> Eres el círculo negro. Muévelo con el ratón para empujar las fichas enemigas al vacío.</div>
                 </div>
                 <div class="help-item">
                     <div class="h-icon icon-prohibido">X</div>
-                    <div class="h-text"><strong>Color Prohibido:</strong> Tienes un color a cargo. Si esta ficha cae al abismo, es FIN DEL JUEGO.</div>
+                    <div class="h-text"><strong>Color prohibido:</strong> Tienes un color a cargo. Si esta ficha cae al abismo, es fin del juego.</div>
                 </div>
                 <div class="help-item">
                     <div class="h-icon icon-puntos"><div class="tri"></div></div>
-                    <div class="h-text"><strong>Puntos:</strong> Rectángulos enemigos = +1 Punto. Triángulos enemigos = +2 Puntos.</div>
+                    <div class="h-text"><strong>Puntos:</strong> Rectángulos enemigos = +1 punto. Triángulos enemigos = +2 puntos.</div>
                 </div>
                 <div class="help-item">
                     <div class="h-icon icon-madera"></div>
-                    <div class="h-text"><strong>Estructura:</strong> Si demueles los pilares o plataformas (cuadros/madera), pierdes 3 Puntos.</div>
+                    <div class="h-text"><strong>Estructura:</strong> Si demueles los pilares o plataformas (cuadros/madera), pierdes 3 puntos.</div>
                 </div>
                 <div class="help-item">
                     <div class="h-icon icon-ruleta">👻</div>
-                    <div class="h-text"><strong>La Ruleta:</strong> Cada 8s cambia (Gigante, Invertido o 3D). Tu bola se volverá <i>fantasma</i> 1 segundo para no romper nada al cambiar.</div>
+                    <div class="h-text"><strong>La ruleta:</strong> Cada 8s cambia (Gigante, Invertido o 3D). Tu bola se volverá <i>fantasma</i> 1 segundo para no romper nada al cambiar.</div>
                 </div>
             </div>
-            <button id="btn-close-help">ENTENDIDO</button>
+            <button id="btn-close-help">Entendido</button>
         </div>
     </div>
 
     <div id="game-over-screen" class="overlay-screen" style="display: none; opacity: 0;">
         <div class="overlay-box">
-            <h2 id="end-title" style="color: #8C2041; font-size: 3rem;">FIN DEL JUEGO</h2>
+            <h2 id="end-title" style="color: #8C2041; font-size: 3rem;">Fin del juego</h2>
             <p id="game-over-text">Dejaste caer tu color prohibido al vacío.</p>
             
             <div class="score-registration">
-                <h3 style="margin-bottom: 10px; color: #1a0a0b;">Puntaje Final: <span id="final-score-display">0</span></h3>
+                <h3 style="margin-bottom: 10px; color: #1a0a0b;">Puntaje final: <span id="final-score-display">0</span></h3>
                 <input type="text" id="player-name" placeholder="Ingresa tu nombre..." maxlength="12">
-                <button id="btn-save-score">GUARDAR PUNTAJE</button>
+                <button id="btn-save-score">Guardar puntaje</button>
             </div>
         </div>
     </div>
 
     <div id="level-win-screen" class="overlay-screen" style="display: none; opacity: 0;">
         <div class="overlay-box">
-            <h2 style="color: #A6DDE5; font-size: 3rem;">¡ESTRUCTURA LIMPIA!</h2>
+            <h2 style="color: #A6DDE5; font-size: 3rem;">¡Estructura limpia!</h2>
             <p>Derribaste las piezas enemigas sin tirar tu color.</p>
-            <button id="btn-next-level">SIGUIENTE NIVEL</button>
+            <button id="btn-next-level">Siguiente nivel</button>
         </div>
     </div>
 
     <div id="leaderboard-screen" class="overlay-screen" style="display: none; opacity: 0;">
         <div class="overlay-box">
-            <h2 style="color: #1a0a0b; font-size: 2.5rem; margin-bottom: 20px;">RÉCORDS DE GRAVITUD</h2>
+            <h2 style="color: #1a0a0b; font-size: 2.5rem; margin-bottom: 20px;">Récords de Gravitud</h2>
             <ul id="leaderboard-list" class="leaderboard-list"></ul>
-            <button onclick="location.reload()" style="margin-top: 30px;">VOLVER A JUGAR</button>
+            <button onclick="location.reload()" style="margin-top: 30px;">Volver a jugar</button>
         </div>
     </div>
 
