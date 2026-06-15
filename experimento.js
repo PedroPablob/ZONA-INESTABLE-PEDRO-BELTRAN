@@ -32,7 +32,7 @@ const cNegro = '#1a0a0b';
 
 let colorProhibido = '';
 let currentLevel = 1;
-let totalNiveles = 5; 
+let totalNiveles = 10; 
 let puntos = 0; 
 let cameraY = 0; 
 let maxScroll = 0; 
@@ -129,8 +129,8 @@ function crearPlataforma(x, y, w) {
     return plat;
 }
 
-function colgarPlataforma(plat, x, ancho) {
-    World.add(world, Constraint.create({ pointA: { x: x - (ancho/2 - 20), y: -1000 }, bodyB: plat, pointB: { x: -(ancho/2 - 20), y: 0 }, stiffness: 0.1, render: { strokeStyle: cNegro } }));
+function colgarPlataforma(plat, x, ancho, anclajeY = -1000) {
+    World.add(world, Constraint.create({ pointA: { x: x - (ancho/2 - 20), y: anclajeY }, bodyB: plat, pointB: { x: -(ancho/2 - 20), y: 0 }, stiffness: 0.1, render: { strokeStyle: cNegro } }));
     World.add(world, Constraint.create({ pointA: { x: x + (ancho/2 - 20), y: -1000 }, bodyB: plat, pointB: { x: (ancho/2 - 20), y: 0 }, stiffness: 0.1, render: { strokeStyle: cNegro } }));
 }
 
@@ -143,8 +143,9 @@ function crearPilar(x, y) {
     World.add(world, pilar); todaLaEstructura.push(pilar);
 }
 
-function crearFicha(x, y, colorName) {
-    const isTri = Math.random() > 0.5;
+function crearFicha(x, y, colorName, isRectangle = null) {
+    const isRect = (isRectangle === null) ? (Math.random() > 0.5) : isRectangle;
+    
     const opcionesFicha = { 
         render: { 
             fillStyle: palette[colorName],
@@ -153,7 +154,7 @@ function crearFicha(x, y, colorName) {
         }, 
         friction: 0.9, density: 0.002, restitution: 0 
     };
-    const ficha = isTri ? Bodies.polygon(x, y, 3, 35, opcionesFicha) : Bodies.rectangle(x, y, 40, 80, opcionesFicha);
+    const ficha = isRect ? Bodies.rectangle(x, y, 40, 80, opcionesFicha) : Bodies.polygon(x, y, 3, 35, opcionesFicha);
     
     ficha.colorAsignado = colorName; ficha.caida = false; 
     World.add(world, ficha); todasLasFichas.push(ficha);
@@ -163,6 +164,7 @@ function colorEnemigoSeguro() {
     let rc; do { rc = coloresArr[Math.floor(Math.random() * coloresArr.length)]; } while (rc === colorProhibido); return rc;
 }
 
+// --- CARGADOR DE NIVELES (AHORA CON ALEATORIEDAD) ---
 function cargarNivel(nivel) {
     limpiarMundo();
     const cx = window.innerWidth / 2;
@@ -172,16 +174,23 @@ function cargarNivel(nivel) {
     if (nivel === 1) {
         maxScroll = 0; 
         const p1 = crearPlataforma(cx, cy, 600); colgarPlataforma(p1, cx, 600);
-        crearFicha(cx - 200, cy - 65, colorEnemigoSeguro()); crearFicha(cx - 100, cy - 65, colorEnemigoSeguro());
-        crearFicha(cx + 200, cy - 65, colorEnemigoSeguro()); crearFicha(cx + 100, cy - 65, colorEnemigoSeguro());
-        crearFicha(cx - 50, cy - 65, colorProhibido); 
+        
+        // Randomizamos la posición inicial incluso en el nivel 1
+        let posX = [cx - 200, cx - 100, cx + 100, cx + 200, cx - 50].sort(() => Math.random() - 0.5);
+        crearFicha(posX[0], cy - 65, colorProhibido); 
+        for(let i=1; i<5; i++) crearFicha(posX[i], cy - 65, colorEnemigoSeguro());
     } 
     else if (nivel === 2) {
         maxScroll = -200; 
         const p1 = crearPlataforma(cx, cy, 600); colgarPlataforma(p1, cx, 600);
         crearPilar(cx - 150, cy - 70); crearPilar(cx + 150, cy - 70);
         const p2 = crearPlataforma(cx, cy - 140, 400); 
-        crearFicha(cx - 100, cy - 185, colorEnemigoSeguro()); crearFicha(cx + 100, cy - 185, colorEnemigoSeguro()); crearFicha(cx, cy - 185, colorProhibido);
+        
+        // Randomización en el Nivel 2
+        let posX = [cx - 100, cx, cx + 100].sort(() => Math.random() - 0.5);
+        crearFicha(posX[0], cy - 185, colorProhibido);
+        crearFicha(posX[1], cy - 185, colorEnemigoSeguro());
+        crearFicha(posX[2], cy - 185, colorEnemigoSeguro());
     }
     else if (nivel === 3) {
         maxScroll = -300; 
@@ -190,7 +199,11 @@ function cargarNivel(nivel) {
         const p2 = crearPlataforma(cx, cy - 140, 400); 
         crearPilar(cx - 80, cy - 210); crearPilar(cx + 80, cy - 210);
         const p3 = crearPlataforma(cx, cy - 280, 240); 
-        crearFicha(cx - 50, cy - 325, colorEnemigoSeguro()); crearFicha(cx + 50, cy - 325, colorProhibido);
+        
+        // Randomización entre los 2 lugares altos
+        let posX = [cx - 50, cx + 50].sort(() => Math.random() - 0.5);
+        crearFicha(posX[0], cy - 325, colorProhibido);
+        crearFicha(posX[1], cy - 325, colorEnemigoSeguro());
     }
     else if (nivel === 4) {
         maxScroll = -250; 
@@ -201,7 +214,7 @@ function cargarNivel(nivel) {
         crearFicha(cx - 200, cy - 185, colorEnemigoSeguro()); crearFicha(cx - 100, cy - 185, colorProhibido);
         crearFicha(cx + 200, cy - 185, colorEnemigoSeguro()); crearFicha(cx + 100, cy - 185, colorEnemigoSeguro());
     }
-    else if (nivel >= 5) {
+    else if (nivel === 5) {
         maxScroll = -400; 
         const p1a = crearPlataforma(cx - 250, cy, 400); colgarPlataforma(p1a, cx - 250, 400);
         const p1b = crearPlataforma(cx + 250, cy, 400); colgarPlataforma(p1b, cx + 250, 400);
@@ -213,8 +226,82 @@ function cargarNivel(nivel) {
         crearPilar(cx - 100, cy - 210); crearPilar(cx + 100, cy - 210);
         const p3a = crearPlataforma(cx - 150, cy - 280, 200);
         const p3b = crearPlataforma(cx + 150, cy - 280, 200);
-        crearFicha(cx - 150, cy - 325, colorEnemigoSeguro()); crearFicha(cx + 150, cy - 325, colorEnemigoSeguro());
-        crearFicha(cx, cy - 325, colorProhibido);
+        
+        // ¡Aleatorización del Nivel 5!
+        let posX = [cx - 150, cx, cx + 150].sort(() => Math.random() - 0.5);
+        crearFicha(posX[0], cy - 325, colorProhibido);
+        crearFicha(posX[1], cy - 325, colorEnemigoSeguro());
+        crearFicha(posX[2], cy - 325, colorEnemigoSeguro());
+    }
+    else if (nivel === 6) {
+        maxScroll = -450;
+        const baseP = crearPlataforma(cx, cy, 500); colgarPlataforma(baseP, cx, 500);
+        crearPilar(cx, cy - 70);
+        const pendP = crearPlataforma(cx, cy + 100, 300); colgarPlataforma(pendP, cx, 300, cy);
+        
+        crearFicha(cx - 150, cy - 65, colorEnemigoSeguro()); crearFicha(cx + 150, cy - 65, colorEnemigoSeguro());
+        // Randomizar piezas en el péndulo inferior
+        let posX = [cx - 60, cx, cx + 60].sort(() => Math.random() - 0.5);
+        crearFicha(posX[0], cy + 100 - 65, colorProhibido); 
+        crearFicha(posX[1], cy + 100 - 65, colorEnemigoSeguro(), true); 
+        crearFicha(posX[2], cy + 100 - 65, colorEnemigoSeguro(), true);
+    }
+    else if (nivel === 7) {
+        maxScroll = -350;
+        const p1 = crearPlataforma(cx, cy, 800); colgarPlataforma(p1, cx, 800);
+        crearPilar(cx, cy - 70); 
+        const p2 = crearPlataforma(cx, cy - 140, 700);
+        
+        crearFicha(cx - 300, cy - 185, colorEnemigoSeguro(), false); crearFicha(cx + 300, cy - 185, colorEnemigoSeguro(), false);
+        crearFicha(cx - 250, cy - 185, colorEnemigoSeguro(), true); crearFicha(cx + 250, cy - 185, colorEnemigoSeguro(), true);
+        crearFicha(cx, cy - 185, colorProhibido);
+    }
+    else if (nivel === 8) {
+        maxScroll = -400;
+        const p1 = crearPlataforma(cx, cy, 600); colgarPlataforma(p1, cx, 600);
+        crearPilar(cx - 150, cy - 70); crearPilar(cx + 150, cy - 70);
+        const p2 = crearPlataforma(cx, cy - 140, 400);
+        
+        for(let i=0; i<5; i++) { crearFicha(cx - 160 + (i*80), cy - 185, colorEnemigoSeguro(), true); }
+        crearFicha(cx, cy - 265, colorProhibido);
+        crearFicha(cx - 150, cy - 225, colorEnemigoSeguro()); crearFicha(cx + 150, cy - 225, colorEnemigoSeguro());
+    }
+    else if (nivel === 9) {
+        maxScroll = -600;
+        const p1 = crearPlataforma(cx, cy, 800); colgarPlataforma(p1, cx, 800);
+        
+        crearPilar(cx - 200, cy - 70); const p2a = crearPlataforma(cx - 200, cy - 140, 300);
+        crearPilar(cx - 200, cy - 210); const p3a = crearPlataforma(cx - 200, cy - 280, 200);
+        crearPilar(cx + 200, cy - 70); const p2b = crearPlataforma(cx + 200, cy - 140, 300);
+        crearPilar(cx + 200, cy - 210); const p3b = crearPlataforma(cx + 200, cy - 280, 200);
+        
+        // Asignación de fichas superior en torres gemelas con aleatoriedad
+        let posiciones = [cx - 200, cx + 200].sort(() => Math.random() - 0.5);
+        crearFicha(posiciones[0], cy - 325, colorProhibido);
+        crearFicha(posiciones[1], cy - 325, colorEnemigoSeguro());
+        
+        crearFicha(cx - 250, cy - 185, colorEnemigoSeguro()); crearFicha(cx - 150, cy - 185, colorEnemigoSeguro());
+        crearFicha(cx + 250, cy - 185, colorEnemigoSeguro()); crearFicha(cx + 150, cy - 185, colorEnemigoSeguro());
+    }
+    else if (nivel === 10) {
+        maxScroll = -800;
+        const p1 = crearPlataforma(cx, cy, 700); colgarPlataforma(p1, cx, 700);
+        crearPilar(cx - 150, cy - 70); crearPilar(cx + 150, cy - 70);
+        const p2 = crearPlataforma(cx, cy - 140, 600);
+        
+        crearFicha(cx - 250, cy - 185, colorEnemigoSeguro()); crearFicha(cx + 250, cy - 185, colorEnemigoSeguro());
+        crearFicha(cx - 50, cy - 185, colorEnemigoSeguro()); crearFicha(cx + 50, cy - 185, colorEnemigoSeguro());
+
+        crearPilar(cx - 80, cy - 210); crearPilar(cx + 80, cy - 210);
+        const p3 = crearPlataforma(cx, cy - 280, 300);
+        for(let i=0; i<3; i++) { crearFicha(cx - 80 + (i*80), cy - 325, colorEnemigoSeguro(), false); }
+
+        crearPilar(cx, cy - 350);
+        const p4 = crearPlataforma(cx, cy - 420, 150);
+        crearFicha(cx, cy - 465, colorEnemigoSeguro(), true);
+        
+        const pendFinal = crearPlataforma(cx, cy - 520, 100); colgarPlataforma(pendFinal, cx, 100, cy - 420);
+        crearFicha(cx, cy - 520 - 65, colorProhibido, true); 
     }
 }
 
@@ -329,6 +416,7 @@ function toggleHelp() {
 }
 if(btnHelp) btnHelp.addEventListener('click', toggleHelp);
 if(btnCloseHelp) btnCloseHelp.addEventListener('click', toggleHelp);
+
 window.addEventListener('keydown', (e) => { 
     if (e.key.toLowerCase() === 'h') {
         if (document.activeElement.tagName === 'INPUT' || !juegoActivo) return;
@@ -356,14 +444,10 @@ setTimeout(() => {
     ruletaName.innerText = `TU COLOR: ${colorProhibido}`; 
     ruletaName.style.color = cNegro; 
     
-    // --- SOLUCIÓN DEL CAMUFLAJE BLANCO EN EL TEXTO SUPERIOR ---
     const instruccionJuego = document.getElementById('instruccion-juego');
     instruccionJuego.innerText = `No dejes caer tu color prohibido: ${colorProhibido}`;
-    if (colorProhibido === 'BLANCO') {
-        instruccionJuego.style.color = cNegro; // Si es blanco lo pintamos de negro para que se lea
-    } else {
-        instruccionJuego.style.color = palette[colorProhibido]; // Si es otro color, mantiene su color
-    }
+    if (colorProhibido === 'BLANCO') {instruccionJuego.style.color = cNegro;} 
+    else {instruccionJuego.style.color = palette[colorProhibido];}
     
     btnStart.style.opacity = 1; btnStart.style.pointerEvents = 'auto';
 }, 3000);
@@ -402,7 +486,7 @@ function terminarJuego(victoria) {
     if (victoria) {
         endTitle.innerText = "¡PROYECTO COMPLETADO!";
         endTitle.style.color = palette['CIAN'];
-        endText.innerText = "Limpiaste la estructura final en el Nivel 5 sin perder tu color.";
+        endText.innerText = `Limpiaste la estructura final en el Nivel ${totalNiveles} sin perder tu color.`;
     } else {
         endTitle.innerText = "FIN DEL JUEGO";
         endTitle.style.color = palette['ROJO'];
@@ -488,7 +572,6 @@ setInterval(() => {
 
 }, 8000); 
 
-// Atajo Tecla N
 window.addEventListener('keydown', (e) => {
     if(e.key.toLowerCase() === 'n' && juegoActivo && !juegoPausado) {
         currentLevel++; cargarNivel(currentLevel);
