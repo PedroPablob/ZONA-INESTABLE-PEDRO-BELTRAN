@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravitud - Experimento Físico</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <link rel="stylesheet" href="experimento.css">
+</head>
+<body>
+
+    <a href="index.html" class="back-home">Volver al inicio</a>
+
+    <div class="ui-container">
+        <h2 id="ruleta-status">ESTABILIDAD NORMAL</h2>
+        <p id="instruccion-juego">No dejes caer tu color prohibido.</p>
+    </div>
+
+    <div class="level-indicator" id="level-indicator">NIVEL 1</div>
+    <div class="score-counter" id="score-counter">PUNTOS: 0</div>
+
+    <div id="intro-screen" class="overlay-screen">
+        <div class="overlay-box">
+            <h2>GIRANDO RULETA...</h2>
+            <p>El color que te toque, será tu responsabilidad.<br>Si tiras una pieza de este color al vacío, pierdes.</p>
+            <div class="ruleta-color-container">
+                <div id="ruleta-color-box"></div>
+                <h3 id="ruleta-color-name">???</h3>
+            </div>
+            <button id="btn-start" style="opacity: 0; pointer-events: none;">COMENZAR NIVEL 1</button>
+        </div>
+    </div>
+
+    <div id="game-over-screen" class="overlay-screen" style="display: none; opacity: 0;">
+        <div class="overlay-box">
+            <h2 id="end-title" style="color: #8C2041; font-size: 3rem;">FIN DEL JUEGO</h2>
+            <p id="game-over-text">Dejaste caer tu color prohibido al vacío.</p>
+            
+            <div class="score-registration">
+                <h3 style="margin-bottom: 10px; color: #1a0a0b;">Puntaje Final: <span id="final-score-display">0</span></h3>
+                <input type="text" id="player-name" placeholder="Ingresa tu nombre..." maxlength="12">
+                <button id="btn-save-score">GUARDAR PUNTAJE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="level-win-screen" class="overlay-screen" style="display: none; opacity: 0;">
+        <div class="overlay-box">
+            <h2 style="color: #A6DDE5; font-size: 3rem;">¡ESTRUCTURA LIMPIA!</h2>
+            <p>Derribaste las piezas enemigas sin tirar tu color.</p>
+            <button id="btn-next-level">SIGUIENTE NIVEL</button>
+        </div>
+    </div>
+
+    <div id="leaderboard-screen" class="overlay-screen" style="display: none; opacity: 0;">
+        <div class="overlay-box">
+            <h2 style="color: #1a0a0b; font-size: 2.5rem; margin-bottom: 20px;">RÉCORDS DE GRAVITUD</h2>
+            <ul id="leaderboard-list" class="leaderboard-list">
+                </ul>
+            <button onclick="location.reload()" style="margin-top: 30px;">VOLVER A JUGAR</button>
+        </div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <script src="experimento.js"></script>
+</body>
+</html>

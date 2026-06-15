@@ -81,7 +81,7 @@
 
         <div class="ref-block scroll-anim">
             <h2>ZONA INESTABLE</h2>
-            <p>Zona Inestable es un juego de mesa que explora las leyes de la física a través de un sistema de estructuras modulares y piezas hexagonales suspendidas. El juego propone una experiencia de tensión constante donde cada jugador altera el centro de masa y la estabilidad del tablero a través del peso y el posicionamiento de los componentes.</p>
+            <p>Zona Inestable es un juego de mesa que explora las leyes de la física a través de un sistema de structures modulares y piezas hexagonales suspendidas. El juego propone una experiencia de tensión constante donde cada jugador altera el centro de masa y la estabilidad del tablero a través del peso y el posicionamiento de los componentes.</p>
         </div>
 
         <div class="qr-showcase scroll-anim image-showcase-container">
@@ -93,15 +93,15 @@
             <div class="ref-block scroll-anim">
                 <h2>MECÁNICAS FÍSICAS</h2>
                 <div class="mechanics-grid">
-                    <div class="mechanic-card interactive-card" data-video="video-estructura.mp4">
+                    <div class="mechanic-card interactive-card" data-video="videos/ESTRUCTURA.mp4">
                         <h3>LA ESTRUCTURA</h3>
                         <p>Los jugadores construyen el tablero de manera modular, acoplando plataformas hexagonales. Esto genera un ecosistema suspendido frágil donde cada decisión altera el centro de masa.</p>
                     </div>
-                    <div class="mechanic-card interactive-card" data-video="video-objetivo.mp4">
+                    <div class="mechanic-card interactive-card" data-video="videos/CAÑA.mp4">
                         <h3>EL OBJETIVO</h3>
                         <p>Haciendo uso de una caña extendible, el jugador debe derribar la mayor cantidad de piezas rivales fuera de la estructura, evitando el colapso total y cuidando sus propias fichas.</p>
                     </div>
-                    <div class="mechanic-card interactive-card" data-video="video-ruleta.mp4">
+                    <div class="mechanic-card interactive-card" data-video="videos/RULETA.mp4">
                         <h3>LA RULETA</h3>
                         <p>El azar dicta las condiciones motrices del turno. Una ruleta restringe la interacción obligando al jugador a utilizar "solo mano izquierda", "solo mano derecha" o "ambas manos".</p>
                     </div>
@@ -114,15 +114,11 @@
                 <div class="components-showcase grid-layout">
                     
                     <div class="components-group top-pieces">
+                        
                         <div class="component-item">
                             <div class="scene3d" title="Clic para cambiar color">
                                 <div class="piece3d piece-std" id="piezaEstandar">
-                                    <div class="face-std front"></div>
-                                    <div class="face-std back"></div>
-                                    <div class="face-std right"></div>
-                                    <div class="face-std left"></div>
-                                    <div class="face-std top"></div>
-                                    <div class="face-std bottom"></div>
+                                    <div class="face-std front"></div><div class="face-std back"></div><div class="face-std right"></div><div class="face-std left"></div><div class="face-std top"></div><div class="face-std bottom"></div>
                                 </div>
                             </div>
                             <h4>PIEZA ESTÁNDAR</h4>
@@ -132,44 +128,69 @@
                         <div class="component-item">
                             <div class="scene3d" title="Clic para cambiar color">
                                 <div class="piece3d piece-spc" id="piezaEspecial">
-                                    <div class="face-spc front"></div>
-                                    <div class="face-spc back"></div>
-                                    <div class="face-spc right"></div>
-                                    <div class="face-spc left"></div>
-                                    <div class="face-spc top"></div>
-                                    <div class="face-spc bottom"></div>
-                                    <div class="roof-face roof-front"></div>
-                                    <div class="roof-face roof-back"></div>
-                                    <div class="roof-face roof-right"></div>
-                                    <div class="roof-face roof-left"></div>
+                                    <div class="face-spc front"></div><div class="face-spc back"></div><div class="face-spc right"></div><div class="face-spc left"></div><div class="face-spc top"></div><div class="face-spc bottom"></div><div class="roof-face roof-front"></div><div class="roof-face roof-back"></div><div class="roof-face roof-right"></div><div class="roof-face roof-left"></div>
                                 </div>
                             </div>
                             <h4>PIEZA ESPECIAL</h4>
                             <p>Valor: 2 Puntos<br>Cantidad: 2 por jugador</p>
                         </div>
+
+                        <!-- 3. LA CAÑA (SWAP DISPLAY NATIVO) -->
+                        <div class="component-item cana-wrapper">
+                            <div class="cana-container">
+                                
+                                <!-- CAÑA CERRADA -->
+                                <div class="scene3d cana-cerrada-scene">
+                                    <div class="piece3d piece-cana">
+                                        <div class="piece-stick stick-base">
+                                            <div class="face-stick base-f front"></div><div class="face-stick base-f back"></div><div class="face-stick base-f top"></div><div class="face-stick base-f bottom"></div><div class="face-stick base-f left"></div><div class="face-stick base-f right"></div>
+                                        </div>
+                                        <div class="piece-stick stick-ext">
+                                            <div class="face-stick ext-f front"></div><div class="face-stick ext-f back"></div><div class="face-stick ext-f top"></div><div class="face-stick ext-f bottom"></div><div class="face-stick ext-f left"></div><div class="face-stick ext-f right"></div>
+                                            <div class="cana-string"></div>
+                                            <div class="bola-3d" title="Clic para cambiar color">
+                                                <div class="bola-face-1"></div><div class="bola-face-2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CAÑA EXTENDIDA (OCULTA POR DEFECTO CON STYLE) -->
+                                <div class="scene3d cana-extendida-scene" style="display: none;">
+                                    <div class="piece3d piece-cana">
+                                        <div class="piece-stick stick-base">
+                                            <div class="face-stick base-f front"></div><div class="face-stick base-f back"></div><div class="face-stick base-f top"></div><div class="face-stick base-f bottom"></div><div class="face-stick base-f left"></div><div class="face-stick base-f right"></div>
+                                        </div>
+                                        <div class="piece-stick stick-ext ext-opened">
+                                            <div class="face-stick ext-f front"></div><div class="face-stick ext-f back"></div><div class="face-stick ext-f top"></div><div class="face-stick ext-f bottom"></div><div class="face-stick ext-f left"></div><div class="face-stick ext-f right"></div>
+                                            <div class="cana-string"></div>
+                                            <div class="bola-3d" title="Clic para cambiar color">
+                                                <div class="bola-face-1"></div><div class="bola-face-2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <h4>CAÑA EXTENSORA</h4>
+                            <p>Haz clic para extender.<br>Bola interactiva.</p>
+                        </div>
+
                     </div>
 
                     <div class="components-group bottom-pieces">
-                        <div class="component-item platform-item">
-                            <div class="scene3d no-click">
+                        
+                        <!-- 1. PLATAFORMA INDIVIDUAL -->
+                        <div class="component-item platform-item individual-piece">
+                            <div class="scene3d">
                                 <div class="piece3d piece-hex">
                                     <div class="face-hex hex-front"></div>
                                     <div class="center-connector connector-front">
-                                        <div class="connector-layer w4"></div>
-                                        <div class="connector-layer w3"></div>
-                                        <div class="connector-layer w2"></div>
-                                        <div class="connector-layer w1"></div>
-                                        <div class="connector-layer w0"></div>
-                                        <div class="connector-hole hole-hex"></div>
+                                        <div class="connector-layer w4"></div><div class="connector-layer w3"></div><div class="connector-layer w2"></div><div class="connector-layer w1"></div><div class="connector-layer w0"></div><div class="connector-hole hole-hex"></div>
                                     </div>
                                     <div class="face-hex hex-back"></div>
                                     <div class="center-connector connector-back">
-                                        <div class="connector-layer w4"></div>
-                                        <div class="connector-layer w3"></div>
-                                        <div class="connector-layer w2"></div>
-                                        <div class="connector-layer w1"></div>
-                                        <div class="connector-layer w0"></div>
-                                        <div class="connector-hole hole-hex"></div>
+                                        <div class="connector-layer w4"></div><div class="connector-layer w3"></div><div class="connector-layer w2"></div><div class="connector-layer w1"></div><div class="connector-layer w0"></div><div class="connector-hole hole-hex"></div>
                                     </div>
                                 </div>
                             </div>
@@ -177,8 +198,9 @@
                             <p>Superficie modular de juego.</p>
                         </div>
 
-                        <div class="component-item pillar-item">
-                            <div class="scene3d no-click">
+                        <!-- 2. PILAR INDIVIDUAL -->
+                        <div class="component-item pillar-item individual-piece">
+                            <div class="scene3d">
                                 <div class="piece3d piece-pillar">
                                     <div class="face-pillar face-grain front"></div>
                                     <div class="face-pillar face-grain back"></div>
@@ -192,17 +214,13 @@
                             <p>Vertical conector de madera de pino.</p>
                         </div>
 
-                        <div class="component-item base-item">
-                            <div class="scene3d no-click">
+                        <!-- 3. BASE INDIVIDUAL -->
+                        <div class="component-item base-item individual-piece">
+                            <div class="scene3d">
                                 <div class="piece3d piece-base">
                                     <div class="face-circle circle-front"></div>
                                     <div class="center-connector connector-front">
-                                        <div class="connector-layer w4"></div>
-                                        <div class="connector-layer w3"></div>
-                                        <div class="connector-layer w2"></div>
-                                        <div class="connector-layer w1"></div>
-                                        <div class="connector-layer w0"></div>
-                                        <div class="connector-hole hole-base"></div>
+                                        <div class="connector-layer w4"></div><div class="connector-layer w3"></div><div class="connector-layer w2"></div><div class="connector-layer w1"></div><div class="connector-layer w0"></div><div class="connector-hole hole-base"></div>
                                     </div>
                                     <div class="face-circle circle-back"></div>
                                 </div>
@@ -210,6 +228,49 @@
                             <h4>BASE SOPORTE</h4>
                             <p>Anclaje de estabilidad central.</p>
                         </div>
+
+                        <!-- 4. PIEZA ENSAMBLADA (OCULTA POR DEFECTO CON STYLE) -->
+                        <div class="component-item assembled-item" style="display: none;">
+                            <div class="scene3d">
+                                <div class="piece3d piece-assembled">
+                                    
+                                    <!-- Plataforma Acostada Arriba -->
+                                    <div class="piece3d piece-hex as-hex">
+                                        <div class="face-hex hex-front"></div>
+                                        <div class="center-connector connector-front">
+                                            <div class="connector-layer w4"></div><div class="connector-layer w3"></div><div class="connector-layer w2"></div><div class="connector-layer w1"></div><div class="connector-layer w0"></div><div class="connector-hole hole-hex"></div>
+                                        </div>
+                                        <div class="face-hex hex-back"></div>
+                                        <div class="center-connector connector-back">
+                                            <div class="connector-layer w4"></div><div class="connector-layer w3"></div><div class="connector-layer w2"></div><div class="connector-layer w1"></div><div class="connector-layer w0"></div><div class="connector-hole hole-hex"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Pilar Vertical al Centro -->
+                                    <div class="piece3d piece-pillar as-pillar">
+                                        <div class="face-pillar face-grain front"></div>
+                                        <div class="face-pillar face-grain back"></div>
+                                        <div class="face-pillar face-grain left"></div>
+                                        <div class="face-pillar face-grain right"></div>
+                                        <div class="face-pillar top"></div>
+                                        <div class="face-pillar bottom"></div>
+                                    </div>
+                                    
+                                    <!-- Base Acostada Abajo -->
+                                    <div class="piece3d piece-base as-base">
+                                        <div class="face-circle circle-front"></div>
+                                        <div class="center-connector connector-front">
+                                            <div class="connector-layer w4"></div><div class="connector-layer w3"></div><div class="connector-layer w2"></div><div class="connector-layer w1"></div><div class="connector-layer w0"></div><div class="connector-hole hole-base"></div>
+                                        </div>
+                                        <div class="face-circle circle-back"></div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <h4>ESTRUCTURA ENSAMBLADA</h4>
+                            <p>Haz clic para desarmar las piezas.</p>
+                        </div>
+
                     </div>
 
                 </div>
@@ -261,7 +322,7 @@
 
         <div class="ref-container" style="padding-top: 40px;">
             <div class="ref-block scroll-anim">
-                <h2>STACK DE HERRAMIENTAS</h2>
+                <h2>Herramientas usadas</h2>
                 <div class="tools-image-grid">
                     <div class="tool-item-container">
                         <div class="tool-img-wrapper"><img src="FIGMA.png" alt="Figma"></div>

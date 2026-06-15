@@ -51,7 +51,7 @@ body.scroll-allowed { overflow-y: auto; }
 }
 .intro-btn:hover { background-color: #FEFBF2; color: #9c3d42; box-shadow: 0 0 15px rgba(254, 251, 242, 0.5); }
 
-/* === INDICADOR DE SECCIÓN FLOTANTE (PÍLDORA LIMPIA) === */
+/* === INDICADOR DE SECCIÓN FLOTANTE === */
 .section-indicator {
     position: fixed; top: 35px; left: 45px; background-color: #9c3d42; border: none; 
     padding: 8px 24px; border-radius: 30px; z-index: 2500;
@@ -158,14 +158,13 @@ body.scroll-allowed { overflow-y: auto; }
 /* === SECCIONES LANDING === */
 .scrollable-screen { height: auto; overflow: visible; }
 .new-section { 
-    background-color: #fff; 
+    background-color: #fff !important; 
     display: flex; 
     flex-direction: column; 
     align-items: center; 
     width: 100%; 
     z-index: 10; 
     padding-top: 50px; 
-    transform: translateZ(0); /* Solución lag: Fuerza capa aislada para el render */
     position: relative;
 }
 
@@ -175,7 +174,7 @@ body.scroll-allowed { overflow-y: auto; }
 @keyframes titleFallFromSky { 0% { transform: translateY(-100px); opacity: 0; } 60% { transform: translateY(25px); opacity: 1; } 100% { transform: translateY(0); opacity: 1; } }
 
 .ref-block { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 25px; }
-.ref-block h2 { font-family: 'Space Grotesk', sans-serif; color: #9c3d42; font-size: 2rem; letter-spacing: -1px; text-transform: uppercase; } 
+.ref-block h2 { font-family: 'Space Grotesk', sans-serif; color: #9c3d42; font-size: 2rem; letter-spacing: -1px; text-transform: none; } 
 .ref-block p { font-size: 1.1rem; color: #1a0a0b; line-height: 1.6; max-width: 700px; } 
 
 .image-showcase-container { padding: 20px; border-radius: 40px; margin-bottom: 0; display: flex; align-items: center; justify-content: center; width: 100%; }
@@ -194,7 +193,7 @@ body.scroll-allowed { overflow-y: auto; }
 .tool-item-container { display: flex; flex-direction: column; align-items: center; gap: 15px; cursor: pointer; }
 .tool-img-wrapper { width: 75px; height: 75px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; justify-content: center; align-items: center; }
 .tool-img-wrapper img { width: 100%; height: 100%; object-fit: contain; }
-.tool-label { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; color: #9c3d42; font-weight: 800; opacity: 0; transform: translateY(10px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
+.tool-label { font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; color: #9c3d42; font-weight: 800; opacity: 0; transform: translateY(10px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
 .tool-item-container:hover .tool-img-wrapper { transform: scale(1.15) translateY(-5px); }
 .tool-item-container:hover .tool-label { opacity: 1; transform: translateY(0); }
 
@@ -202,6 +201,7 @@ body.scroll-allowed { overflow-y: auto; }
 .mechanic-card { background-color: #fdfbf7; border: 2px solid #d8d6dd; padding: 25px; border-radius: 20px; text-align: left; transition: transform 0.3s; }
 .interactive-card { cursor: pointer; position: relative; overflow: hidden; }
 .interactive-card::after { content: "▶"; position: absolute; bottom: 20px; right: 25px; font-size: 1.5rem; color: #9c3d42; opacity: 0; transition: opacity 0.3s, transform 0.3s; transform: translateY(10px) scale(0.8); }
+.interactive-card:hover::after { opacity: 1; transform: translateY(0) scale(1); }
 .mechanic-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(156,61,66,0.1); border-color: #9c3d42; }
 .mechanic-card h3 { color: #9c3d42; font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; margin-bottom: 15px; word-wrap: break-word; overflow-wrap: break-word; hyphens: none; }
 .mechanic-card p { color: #4a3b3c; font-size: 1rem; line-height: 1.5; }
@@ -212,18 +212,11 @@ body.scroll-allowed { overflow-y: auto; }
 .components-group { display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; width: 100%; max-width: 900px; }
 
 .component-item { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    gap: 15px; 
-    width: 220px; 
-    flex-shrink: 0; 
-    position: relative; 
-    transition: transform 0.8s ease-in-out, opacity 0.3s; 
-    will-change: transform; /* Solución lag: Avisa a la GPU del movimiento */
+    display: flex; flex-direction: column; align-items: center; 
+    gap: 15px; width: 220px; flex-shrink: 0; position: relative; 
 }
 
-.scene3d { width: 140px; height: 260px; perspective: 1000px; display: flex; justify-content: center; align-items: center; margin-bottom: 10px; user-select: none; transition: transform 0.3s ease; }
+.scene3d { width: 140px; height: 260px; perspective: 1000px; display: flex; justify-content: center; align-items: center; margin-bottom: 10px; user-select: none; cursor: pointer; transition: transform 0.3s ease; }
 .scene3d:hover { transform: scale(1.1); }
 
 /* Animación Estándar (Vertical) */
@@ -236,7 +229,7 @@ body.scroll-allowed { overflow-y: auto; }
     100% { transform: rotateX(-20deg) rotateY(360deg) rotateX(90deg); } 
 }
 
-/* TODAS LAS PIEZAS INICIAN DEL MISMO COLOR (Rojo de la paleta #8C2041) */
+/* TODAS LAS PIEZAS INICIAN DEL MISMO COLOR */
 .piece-std, .piece-spc { width: 60px; height: 180px; --piece-color: #8C2041; }
 .piece-spc { height: 220px; } 
 .face-std, .face-spc { position: absolute; width: 60px; height: 180px; background-color: var(--piece-color); border: 1px solid rgba(0,0,0,0.1); transition: background-color 0.3s; }
@@ -255,7 +248,7 @@ body.scroll-allowed { overflow-y: auto; }
 .roof-back { transform: rotateY(180deg) translateZ(30px) rotateX(36.87deg); filter: brightness(0.9); }
 .roof-left { transform: rotateY(-90deg) translateZ(30px) rotateX(36.87deg); filter: brightness(1); }
 
-/* Plataforma y Base (spin-flat para acostarlas) */
+/* Plataforma y Base */
 .piece-hex { width: 140px; height: 140px; animation: spin-flat 8s linear infinite; }
 .piece-base { width: 120px; height: 120px; animation: spin-flat 8s linear infinite; }
 .face-hex { position: absolute; width: 140px; height: 140px; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); background-color: #FEFBF2; background-image: repeating-conic-gradient(#F5BEBF 0% 25%, transparent 0% 50%); background-size: 40px 20px; }
@@ -287,57 +280,53 @@ body.scroll-allowed { overflow-y: auto; }
 .face-pillar.top { height: 20px; width: 20px; top: -10px; transform: rotateX(90deg) translateZ(0); filter: brightness(1.2); }
 .face-pillar.bottom { height: 20px; width: 20px; top: calc(100% - 10px); transform: rotateX(-90deg) translateZ(0); filter: brightness(0.6); }
 
+/* === CAÑA EXTENSORA Y BOLA === */
+.cana-container { position: relative; width: 140px; height: 260px; margin-bottom: 10px; }
+.piece-cana { width: 140px; height: 140px; position: relative; transform-style: preserve-3d; animation: spin3d 8s linear infinite; }
+.piece-stick { position: absolute; transform-style: preserve-3d; --wood-color: #E8D5B1; }
+.stick-base { width: 100px; height: 8px; top: 60px; left: 20px; }
+.stick-ext { width: 100px; height: 6px; top: 61px; left: 40px; transform: translateZ(8px); }
+.stick-ext.ext-opened { left: 90px; }
+.face-stick { position: absolute; background-color: var(--wood-color); border: 1px solid rgba(0,0,0,0.05); }
+
+/* Caras vara base */
+.base-f.front { width: 100px; height: 8px; transform: rotateY(0deg) translateZ(4px); filter: brightness(1); }
+.base-f.back { width: 100px; height: 8px; transform: rotateY(180deg) translateZ(4px); filter: brightness(0.8); }
+.base-f.top { width: 100px; height: 8px; transform: rotateX(90deg) translateZ(4px); filter: brightness(1.1); }
+.base-f.bottom { width: 100px; height: 8px; transform: rotateX(-90deg) translateZ(4px); filter: brightness(0.6); }
+.base-f.left { width: 8px; height: 8px; left: -4px; transform: rotateY(-90deg) translateZ(4px); filter: brightness(0.9); }
+.base-f.right { width: 8px; height: 8px; left: 96px; transform: rotateY(90deg) translateZ(4px); filter: brightness(0.85); }
+
+/* Caras vara extensora */
+.ext-f.front { width: 100px; height: 6px; transform: rotateY(0deg) translateZ(3px); filter: brightness(1); }
+.ext-f.back { width: 100px; height: 6px; transform: rotateY(180deg) translateZ(3px); filter: brightness(0.8); }
+.ext-f.top { width: 100px; height: 6px; transform: rotateX(90deg) translateZ(3px); filter: brightness(1.1); }
+.ext-f.bottom { width: 100px; height: 6px; transform: rotateX(-90deg) translateZ(3px); filter: brightness(0.6); }
+.ext-f.left { width: 6px; height: 6px; left: -3px; transform: rotateY(-90deg) translateZ(3px); filter: brightness(0.9); }
+.ext-f.right { width: 6px; height: 6px; left: 97px; transform: rotateY(90deg) translateZ(3px); filter: brightness(0.85); }
+
+/* Cuerda y Bola */
+.cana-string { position: absolute; width: 2px; height: 60px; background-color: #d1cfc7; top: 6px; left: 95px; transform-style: preserve-3d; }
+.bola-3d { position: absolute; width: 24px; height: 24px; top: 66px; left: 84px; transform-style: preserve-3d; cursor: pointer; transition: transform 0.2s; }
+.bola-3d:hover { transform: scale(1.2); }
+.bola-face-1, .bola-face-2 { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff, #b8b8b8); transition: background 0.3s; }
+.bola-face-2 { transform: rotateY(90deg); }
+.bola-negra .bola-face-1, .bola-negra .bola-face-2 { background: radial-gradient(circle at 35% 35%, #555, #1a0a0b); }
+
+
+/* === SWAP ESTRUCTURA UNIFICADA (POSICIONAMIENTO MATEMÁTICO) === */
+.piece-assembled { position: relative; width: 140px; height: 140px; transform-style: preserve-3d; animation: spin3d 8s linear infinite; }
+.piece-assembled .piece3d { position: absolute; animation: none !important; }
+
+/* Eje Y Perfecto */
+.as-hex { top: 0; left: 0; transform: translateY(-60px) rotateX(90deg) !important; }
+.as-pillar { top: 10px; left: 60px; transform: translateY(0) !important; }
+.as-base { top: 10px; left: 10px; transform: translateY(60px) rotateX(90deg) !important; }
+
 /* COMPONENTES TEXTO */
 .component-item h4 { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; color: #1a0a0b; margin-top: 10px; text-align: center; } 
 .component-item p { font-size: 0.9rem; color: #5b5960; line-height: 1.4; text-align: center; } 
 
-/* === ANIMACIÓN DE ENSAMBLE ZONA INESTABLE === */
-.bottom-pieces { 
-    position: relative; 
-    transition: transform 0.5s ease; 
-    /* Eliminamos el preserve-3d de aquí que causaba el bug visual */
-}
-
-.component-item { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    gap: 15px; 
-    width: 220px; 
-    flex-shrink: 0; 
-    position: relative; 
-    transition: transform 0.8s ease-in-out; 
-    /* Eliminamos el will-change de aquí */
-}
-
-/* Independizamos la opacidad para que el texto no interrumpa el render 3D */
-.component-item h4,
-.component-item p {
-    transition: opacity 0.3s ease;
-}
-
-.bottom-pieces.is-assembled .component-item h4,
-.bottom-pieces.is-assembled .component-item p { 
-    opacity: 0; 
-    pointer-events: none; 
-}
-
-.bottom-pieces.is-assembled .scene3d:hover { transform: none; }
-.bottom-pieces.is-assembled:hover { transform: scale(1.05); cursor: pointer; }
-.bottom-pieces .scene3d { cursor: pointer; }
-
-/* Usamos translate3d(x, y, z) para mover las piezas. Esto activa la GPU sin romper el 3D */
-@media (min-width: 769px) {
-    .bottom-pieces.is-assembled .platform-item { transform: translate3d(280px, -60px, 0); z-index: 3; }
-    .bottom-pieces.is-assembled .pillar-item { transform: translate3d(0, 0, 0); z-index: 2; }
-    .bottom-pieces.is-assembled .base-item { transform: translate3d(-280px, 60px, 0); z-index: 1; }
-}
-
-@media (max-width: 768px) {
-    .bottom-pieces.is-assembled .platform-item { transform: translate3d(0px, 360px, 0); z-index: 3; }
-    .bottom-pieces.is-assembled .pillar-item { transform: translate3d(0, 0, 0); z-index: 2; }
-    .bottom-pieces.is-assembled .base-item { transform: translate3d(0px, -360px, 0); z-index: 1; }
-}
 /* === TEXTOS Y MODALES === */
 .conclusion-block { margin-top: 40px; text-align: center; }
 .conclusion-block p { font-size: 1.6rem; font-weight: 700; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #9c3d42; line-height: 1.4; font-style: normal; }
@@ -348,7 +337,8 @@ body.scroll-allowed { overflow-y: auto; }
 .dev-name-line { font-size: 2.8rem !important; font-family: 'Space Grotesk', sans-serif; color: #1a0a0b !important; font-weight: 800; line-height: 1; display: flex; justify-content: center; } 
 .name-letter-hovered { color: hsl(186, 48%, 46%) !important; text-shadow: 0 0 15px rgba(0, 229, 255, 0.8); }
 .name-letter-fading { transition: color 1.5s ease-out, text-shadow 1.5s ease-out !important; color: #1a0a0b !important; text-shadow: none; }
-.dev-context { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.1rem !important; color: #4a3b3c !important; font-weight: 500; letter-spacing: 0px; text-transform: uppercase;} 
+.dev-context { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.1rem !important; color: #4a3b3c !important; font-weight: 500; letter-spacing: 0px; text-transform: none;} 
+
 .docentes-title { margin-top: 45px; }
 .teachers-names { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem; color: #1a0a0b; font-weight: 700; margin-top: 10px; } 
 
@@ -378,6 +368,6 @@ body.scroll-allowed { overflow-y: auto; }
     .qr-text { align-items: center !important; text-align: center !important; }
     .tools-image-grid { gap: 30px; }
     .tool-img-wrapper { width: 60px; height: 60px; }
-    .tool-label { opacity: 1; transform: translateY(0); font-size: 0.9rem;} 
+    .tool-label { opacity: 1; transform: translateY(0); font-size: 1.2rem;} 
     .components-group { flex-direction: column; gap: 40px; align-items: center; }
 }

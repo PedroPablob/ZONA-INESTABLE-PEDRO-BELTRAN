@@ -74,6 +74,7 @@ const indicatorTooltip = document.getElementById('indicatorTooltip');
 let currentSectionName = '';
 let hasSeenTooltip = false; 
 
+// Al hacer clic en la píldora, volvemos arriba (al home)
 sectionIndicator.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     indicatorTooltip.classList.remove('show-tooltip'); 
@@ -125,6 +126,7 @@ document.querySelectorAll('.new-section').forEach(sec => {
     sectionObserver.observe(sec);
 });
 
+// Ocultar la píldora en el Home.
 window.addEventListener('scroll', () => {
     if (window.scrollY < window.innerHeight * 0.5) {
         sectionIndicator.classList.remove('visible');
@@ -161,6 +163,7 @@ if(gravitudTitle) {
     });
 }
 const letterSpans = gravitudTitle?.querySelectorAll('span') || [];
+
 let clickFase = 0; 
 
 setInterval(() => {
@@ -174,6 +177,7 @@ setInterval(() => {
 }, 5000);
 
 gravitudTitle?.addEventListener('click', (e) => {
+    
     if (clickFase === 0) {
         clickFase = 1;
         gravitudTitle.style.animation = 'none';
@@ -192,15 +196,18 @@ gravitudTitle?.addEventListener('click', (e) => {
         ball.classList.add('swing-in');
 
         setTimeout(() => {
+            
             const reversedLetters = [...letterSpans].reverse();
 
             reversedLetters.forEach((s, i) => {
+                
                 const delayExplosion = i * 30; 
                 
                 setTimeout(() => {
                     s.style.color = '#1a0a0b'; 
                     s.className = ''; 
                     s.style.animation = 'none'; 
+                    
                     void s.offsetWidth; 
                     
                     s.style.transition = 'transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1)';
@@ -297,7 +304,7 @@ function closeVideo() {
 }
 
 // --- Colores Piezas 3D ---
-const paletaColores = ['#8C2041', '#A6DDE5', '#FEFBF2', '#F5BEBF']; 
+const paletaColores = ['#8C2041', '#A6DDE5', '#FEFBF2', '#F5BEBF'];
 function activarCambioColor(elemento) {
     if (!elemento) return;
     
@@ -342,28 +349,57 @@ document.querySelectorAll('.dev-name-line').forEach(line => {
     });
 });
 
-// --- LÓGICA DE ENSAMBLE: PIEZAS INFERIORES ---
-const bottomPiecesContainer = document.querySelector('.bottom-pieces');
-const platformItem = document.querySelector('.platform-item');
-const pillarItem = document.querySelector('.pillar-item');
-const baseItem = document.querySelector('.base-item');
+// --- LÓGICA DE ENSAMBLE PLATAFORMA (SWAP DISPLAY NATIVO) ---
+const individualPieces = document.querySelectorAll('.individual-piece');
+const assembledItem = document.querySelector('.assembled-item');
 
-if (bottomPiecesContainer && platformItem && pillarItem && baseItem) {
-    let isAssembled = false;
-    
+if (individualPieces.length > 0 && assembledItem) {
     const toggleAssembly = () => {
-        isAssembled = !isAssembled;
-        if (isAssembled) {
-            bottomPiecesContainer.classList.add('is-assembled');
+        const isAssembled = assembledItem.style.display === 'flex';
+        if (!isAssembled) {
+            individualPieces.forEach(item => item.style.display = 'none');
+            assembledItem.style.display = 'flex';
         } else {
-            bottomPiecesContainer.classList.remove('is-assembled');
+            assembledItem.style.display = 'none';
+            individualPieces.forEach(item => item.style.display = 'flex');
         }
     };
 
-    [platformItem, pillarItem, baseItem].forEach(item => {
+    individualPieces.forEach(item => {
         const scene = item.querySelector('.scene3d');
-        if (scene) {
-            scene.addEventListener('click', toggleAssembly);
-        }
+        if (scene) scene.addEventListener('click', toggleAssembly);
     });
+    
+    const assembledScene = assembledItem.querySelector('.scene3d');
+    if (assembledScene) assembledScene.addEventListener('click', toggleAssembly);
 }
+
+// --- LÓGICA CAÑA EXTENSORA (SWAP DISPLAY NATIVO) Y BOLA DE DEMOLICIÓN ---
+const canaWrapper = document.querySelector('.cana-wrapper');
+if (canaWrapper) {
+    const cerrada = canaWrapper.querySelector('.cana-cerrada-scene');
+    const extendida = canaWrapper.querySelector('.cana-extendida-scene');
+
+    const toggleCana = (e) => {
+        if (e.target.closest('.bola-3d')) return; 
+        const isClosed = cerrada.style.display !== 'none';
+        if (isClosed) {
+            cerrada.style.display = 'none';
+            extendida.style.display = 'flex';
+        } else {
+            extendida.style.display = 'none';
+            cerrada.style.display = 'flex';
+        }
+    };
+    
+    if (cerrada) cerrada.addEventListener('click', toggleCana);
+    if (extendida) extendida.addEventListener('click', toggleCana);
+}
+
+const bolas = document.querySelectorAll('.bola-3d');
+bolas.forEach(bola => {
+    bola.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        bolas.forEach(b => b.classList.toggle('bola-negra'));
+    });
+});
