@@ -14,6 +14,8 @@
 <body>
 
     <a href="index.html" class="back-home">Volver al inicio</a>
+    
+    <button id="btn-help" class="help-btn">AYUDA (H)</button>
 
     <div class="ui-container">
         <h2 id="ruleta-status">ESTABILIDAD NORMAL</h2>
@@ -32,6 +34,35 @@
                 <h3 id="ruleta-color-name">???</h3>
             </div>
             <button id="btn-start" style="opacity: 0; pointer-events: none;">COMENZAR NIVEL 1</button>
+        </div>
+    </div>
+
+    <div id="help-screen" class="overlay-screen" style="display: none; opacity: 0; z-index: 3000;">
+        <div class="overlay-box help-box">
+            <h2>MANUAL DE GRAVITUD</h2>
+            <div class="help-content">
+                <div class="help-item">
+                    <div class="h-icon icon-bola"></div>
+                    <div class="h-text"><strong>Tu Caña:</strong> Eres el círculo negro. Muévelo con el ratón para empujar las fichas enemigas al vacío.</div>
+                </div>
+                <div class="help-item">
+                    <div class="h-icon icon-prohibido">X</div>
+                    <div class="h-text"><strong>Color Prohibido:</strong> Tienes un color a cargo. Si esta ficha cae al abismo, es FIN DEL JUEGO.</div>
+                </div>
+                <div class="help-item">
+                    <div class="h-icon icon-puntos"><div class="tri"></div></div>
+                    <div class="h-text"><strong>Puntos:</strong> Rectángulos enemigos = +1 Punto. Triángulos enemigos = +2 Puntos.</div>
+                </div>
+                <div class="help-item">
+                    <div class="h-icon icon-madera"></div>
+                    <div class="h-text"><strong>Estructura:</strong> Si demueles los pilares o plataformas (cuadros/madera), pierdes 3 Puntos.</div>
+                </div>
+                <div class="help-item">
+                    <div class="h-icon icon-ruleta">👻</div>
+                    <div class="h-text"><strong>La Ruleta:</strong> Cada 8s cambia (Gigante, Invertido o 3D). Tu bola se volverá <i>fantasma</i> 1 segundo para no romper nada al cambiar.</div>
+                </div>
+            </div>
+            <button id="btn-close-help">ENTENDIDO</button>
         </div>
     </div>
 
@@ -59,8 +90,7 @@
     <div id="leaderboard-screen" class="overlay-screen" style="display: none; opacity: 0;">
         <div class="overlay-box">
             <h2 style="color: #1a0a0b; font-size: 2.5rem; margin-bottom: 20px;">RÉCORDS DE GRAVITUD</h2>
-            <ul id="leaderboard-list" class="leaderboard-list">
-                </ul>
+            <ul id="leaderboard-list" class="leaderboard-list"></ul>
             <button onclick="location.reload()" style="margin-top: 30px;">VOLVER A JUGAR</button>
         </div>
     </div>

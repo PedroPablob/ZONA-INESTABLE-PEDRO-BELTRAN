@@ -1,9 +1,10 @@
 const { Engine, Render, Runner, World, Bodies, Body, Events, Constraint, Composite } = Matter;
 
-// CONFIGURACIÓN MÁXIMA ESTABILIDAD: Sin modo 'sleeping' para evitar transparencias y bloqueos
+// CONFIGURACIÓN MÁXIMA ESTABILIDAD
 const engine = Engine.create({
-    positionIterations: 20, // Precisión matemática ultra alta para evitar temblores
-    velocityIterations: 15
+    positionIterations: 20, 
+    velocityIterations: 15,
+    enableSleeping: false 
 });
 const world = engine.world;
 
@@ -13,12 +14,12 @@ const render = Render.create({
     options: { 
         width: window.innerWidth, 
         height: window.innerHeight, 
-        wireframes: false, // Colores sólidos activos
+        wireframes: false, 
         background: 'transparent' 
     }
 });
 
-// Paletas de Color Oficiales
+// --- PALETA Y DATOS ---
 const palette = {
     'CIAN': '#A6DDE5',
     'ROJO': '#8C2041',
@@ -33,19 +34,32 @@ let colorProhibido = '';
 let currentLevel = 1;
 let totalNiveles = 5; 
 let puntos = 0; 
-let ratonX = window.innerWidth / 2;
-let ratonY = 50; 
 let cameraY = 0; 
 let maxScroll = 0; 
 
 let estadoRuleta = 'NORMAL';
 let escalaActual = 1;
 let juegoActivo = false;
+let juegoPausado = false; 
 
 let todasLasFichas = []; 
 let todaLaEstructura = []; 
 
-// --- GENERADOR DINÁMICO DE PATRÓN DE CUADROS ---
+// RELOJ ABSOLUTO PARA EL MODO FANTASMA (Solución al Bug)
+let ghostUntil = 0;
+
+let globalMouseX = window.innerWidth / 2;
+let globalMouseY = window.innerHeight / 2;
+let ratonX = globalMouseX;
+let ratonY = globalMouseY;
+
+window.addEventListener('mousemove', (e) => { 
+    globalMouseX = e.clientX; 
+    globalMouseY = e.clientY; 
+    if(!juegoPausado) { ratonX = globalMouseX; ratonY = globalMouseY; }
+});
+
+// --- GENERADOR DINÁMICO DE PATRÓN ---
 function crearTexturaPlataforma(w, h) {
     const canvas = document.createElement('canvas');
     canvas.width = w; canvas.height = h;
@@ -73,7 +87,15 @@ const cursorFisico = Bodies.circle(ratonX, ratonY, 30, {
 });
 World.add(world, cursorFisico);
 
-// --- CONSTRUCTOR DE NIVELES (REINICIO LIMPIO) ---
+// Función para resetear la escala de la bola sin errores
+function resetCursorScale() {
+    if (escalaActual !== 1) {
+        Body.scale(cursorFisico, 1 / escalaActual, 1 / escalaActual);
+        escalaActual = 1;
+    }
+}
+
+// --- CONSTRUCTOR DE NIVELES ---
 function limpiarMundo() {
     Composite.allBodies(world).forEach(body => { 
         if (body !== cursorFisico) World.remove(world, body); 
@@ -84,41 +106,30 @@ function limpiarMundo() {
     cameraY = 0;
     actualizarCamara();
     
-    // El modo fantasma inicial ahora dura solo 1 segundo para agilizar la interacción
-    cursorFisico.isSensor = true; 
-    cursorFisico.render.opacity = 0.5; 
-
-    Body.scale(cursorFisico, 1 / escalaActual, 1 / escalaActual);
-    escalaActual = 1;
+    // Reseteos seguros
+    resetCursorScale();
     estadoRuleta = 'NORMAL';
     document.getElementById('ruleta-status').innerText = 'ESTABILIDAD NORMAL';
     document.getElementById('ruleta-status').classList.remove('alerta');
     cursorFisico.render.fillStyle = cNegro;
     document.getElementById('canvas-container').classList.remove('vista-cenital'); 
     
-    ratonX = window.innerWidth / 2;
-    ratonY = 50;
-    Body.setPosition(cursorFisico, { x: ratonX, y: ratonY });
+    // Teletransporte al ratón actual
+    ratonX = globalMouseX; 
+    ratonY = globalMouseY;
+    Body.setPosition(cursorFisico, { x: ratonX, y: ratonY + cameraY });
 
-    // Se solidifica de forma segura asegurando opacidad total
-    setTimeout(() => {
-        cursorFisico.isSensor = false;
-        cursorFisico.render.opacity = 1;
-    }, 1000);
+    // ACTIVAMOS MODO FANTASMA INICIAL POR 2 SEGUNDOS
+    ghostUntil = Date.now() + 2000;
 }
 
 function crearPlataforma(x, y, w) {
-    const h = 40; 
-    const plat = Bodies.rectangle(x, y, w, h, { 
-        render: { sprite: { texture: crearTexturaPlataforma(w, h), xScale: 1, yScale: 1 } },
-        friction: 1, 
-        frictionStatic: 20, 
-        density: 0.2, // Mayor peso base para estabilizar pisos superiores
-        restitution: 0 
+    const plat = Bodies.rectangle(x, y, w, 40, { 
+        render: { sprite: { texture: crearTexturaPlataforma(w, 40), xScale: 1, yScale: 1 } },
+        friction: 1, frictionStatic: 20, density: 0.3, restitution: 0 
     });
     plat.isEstructura = true; plat.caida = false;
-    World.add(world, plat); 
-    todaLaEstructura.push(plat); 
+    World.add(world, plat); todaLaEstructura.push(plat); 
     return plat;
 }
 
@@ -130,37 +141,30 @@ function colgarPlataforma(plat, x, ancho) {
 function crearPilar(x, y) {
     const pilar = Bodies.rectangle(x, y, 40, 100, { 
         render: { fillStyle: cMadera }, 
-        friction: 1, 
-        frictionStatic: 20, 
-        density: 0.1, 
-        restitution: 0,
-        slop: 0.02 // Tolerancia de error para encaje perfecto sin micro-rebotes
+        friction: 1, frictionStatic: 20, density: 0.1, restitution: 0, slop: 0.02
     });
     pilar.isEstructura = true; pilar.caida = false;
-    World.add(world, pilar); 
-    todaLaEstructura.push(pilar);
+    World.add(world, pilar); todaLaEstructura.push(pilar);
 }
 
 function crearFicha(x, y, colorName) {
     const isTri = Math.random() > 0.5;
     const opcionesFicha = { 
-        render: { fillStyle: palette[colorName] }, 
-        friction: 0.9, 
-        density: 0.002, // Extremadamente ligeras para que no colapsen los pilares
-        restitution: 0 
+        render: { 
+            fillStyle: palette[colorName],
+            strokeStyle: cNegro,
+            lineWidth: 2 
+        }, 
+        friction: 0.9, density: 0.002, restitution: 0 
     };
     const ficha = isTri ? Bodies.polygon(x, y, 3, 35, opcionesFicha) : Bodies.rectangle(x, y, 40, 80, opcionesFicha);
     
     ficha.colorAsignado = colorName; ficha.caida = false; 
-    World.add(world, ficha); 
-    todasLasFichas.push(ficha);
+    World.add(world, ficha); todasLasFichas.push(ficha);
 }
 
 function colorEnemigoSeguro() {
-    let rc; 
-    do { rc = coloresArr[Math.floor(Math.random() * coloresArr.length)]; } 
-    while (rc === colorProhibido); 
-    return rc;
+    let rc; do { rc = coloresArr[Math.floor(Math.random() * coloresArr.length)]; } while (rc === colorProhibido); return rc;
 }
 
 function cargarNivel(nivel) {
@@ -172,7 +176,6 @@ function cargarNivel(nivel) {
     if (nivel === 1) {
         maxScroll = 0; 
         const p1 = crearPlataforma(cx, cy, 600); colgarPlataforma(p1, cx, 600);
-        crearPilar(cx, cy - 70);
         crearFicha(cx - 200, cy - 65, colorEnemigoSeguro()); crearFicha(cx - 100, cy - 65, colorEnemigoSeguro());
         crearFicha(cx + 200, cy - 65, colorEnemigoSeguro()); crearFicha(cx + 100, cy - 65, colorEnemigoSeguro());
         crearFicha(cx - 50, cy - 65, colorProhibido); 
@@ -219,32 +222,53 @@ function cargarNivel(nivel) {
     }
 }
 
-// --- LÓGICA DE CÁMARA Y MOUSE ---
+// --- CÁMARA Y UPDATE PRINCIPAL ---
 window.addEventListener('wheel', (e) => {
-    if (!juegoActivo) return;
+    if (!juegoActivo || juegoPausado) return;
     cameraY += e.deltaY * 0.8;
     if (cameraY > 0) cameraY = 0; if (cameraY < maxScroll) cameraY = maxScroll; 
     actualizarCamara();
 });
 function actualizarCamara() { Render.lookAt(render, { min: { x: 0, y: cameraY }, max: { x: window.innerWidth, y: window.innerHeight + cameraY }}); }
-window.addEventListener('mousemove', (e) => { ratonX = e.clientX; ratonY = e.clientY; });
 
 Events.on(engine, 'beforeUpdate', () => {
-    if (!juegoActivo) return;
-    let posX = ratonX; let posY = ratonY + cameraY; 
-    if (estadoRuleta === 'INVERTIDO') { posX = window.innerWidth - ratonX; posY = (window.innerHeight - ratonY) + cameraY; }
-    Body.setPosition(cursorFisico, { x: cursorFisico.position.x + (posX - cursorFisico.position.x) * 0.2, y: cursorFisico.position.y + (posY - cursorFisico.position.y) * 0.2 });
+    if (!juegoActivo || juegoPausado) return;
+
+    // LÓGICA DE FANTASMA BLINDADA CON EL RELOJ ABSOLUTO
+    if (Date.now() < ghostUntil) {
+        if (!cursorFisico.isSensor) {
+            cursorFisico.isSensor = true;
+            cursorFisico.render.opacity = 0.4;
+        }
+    } else {
+        if (cursorFisico.isSensor) {
+            cursorFisico.isSensor = false;
+            cursorFisico.render.opacity = 1;
+        }
+    }
+
+    let posX = ratonX; 
+    let posY = ratonY + cameraY; 
+    
+    if (estadoRuleta === 'INVERTIDO') { 
+        posX = window.innerWidth - ratonX; 
+        posY = (window.innerHeight - ratonY) + cameraY; 
+    }
+    
+    Body.setPosition(cursorFisico, { 
+        x: cursorFisico.position.x + (posX - cursorFisico.position.x) * 0.2, 
+        y: cursorFisico.position.y + (posY - cursorFisico.position.y) * 0.2 
+    });
 });
 
-// --- LÓGICA DE JUEGO, PUNTOS Y ABISMO REAL ---
+// --- PUNTOS Y VICTORIA ---
 const scoreDisplay = document.getElementById('score-counter');
 
 Events.on(engine, 'afterUpdate', () => {
-    if (!juegoActivo) return;
+    if (!juegoActivo || juegoPausado) return;
     
     let enemigasVivas = 0;
     let perdiste = false;
-    // Abismo absoluto desvinculado de la cámara para evitar activaciones falsas
     const abismoY = window.innerHeight + cameraY + 600;
 
     for (let i = todasLasFichas.length - 1; i >= 0; i--) {
@@ -280,6 +304,39 @@ Events.on(engine, 'afterUpdate', () => {
         else { winLevel(); }
     }
 });
+
+// --- MANUAL DE AYUDA Y PAUSA ---
+const helpScreen = document.getElementById('help-screen');
+const btnHelp = document.getElementById('btn-help');
+const btnCloseHelp = document.getElementById('btn-close-help');
+
+function toggleHelp() {
+    if(!helpScreen) return;
+    const isClosed = helpScreen.style.display === 'none';
+    
+    if(isClosed) {
+        juegoPausado = true;
+        engine.timing.timeScale = 0; 
+        helpScreen.style.display = 'flex';
+        setTimeout(() => helpScreen.style.opacity = 1, 50);
+        document.body.style.cursor = 'default'; 
+    } else {
+        helpScreen.style.opacity = 0;
+        setTimeout(() => {
+            helpScreen.style.display = 'none';
+            juegoPausado = false;
+            engine.timing.timeScale = 1; 
+            ratonX = globalMouseX; ratonY = globalMouseY; 
+            document.body.style.cursor = 'none';
+            
+            // Damos 1 segundo extra de gracia al quitar la pausa para evitar accidentes
+            ghostUntil = Date.now() + 1000;
+        }, 500);
+    }
+}
+if(btnHelp) btnHelp.addEventListener('click', toggleHelp);
+if(btnCloseHelp) btnCloseHelp.addEventListener('click', toggleHelp);
+window.addEventListener('keydown', (e) => { if(e.key.toLowerCase() === 'h') toggleHelp(); });
 
 // --- PANTALLAS DE JUEGO ---
 const introScreen = document.getElementById('intro-screen');
@@ -334,6 +391,7 @@ function terminarJuego(victoria) {
     const endTitle = document.getElementById('end-title');
     const endText = document.getElementById('game-over-text');
     document.getElementById('final-score-display').innerText = puntos;
+    document.body.style.cursor = 'default';
 
     if (victoria) {
         endTitle.innerText = "¡PROYECTO COMPLETADO!";
@@ -380,30 +438,52 @@ function mostrarLeaderboard(scores) {
     setTimeout(() => leaderboardScreen.style.opacity = 1, 50);
 }
 
-// --- LA RULETA DEL CAOS ---
+// --- LA RULETA DEL CAOS (CORREGIDA AL 100%) ---
 const uiStatus = document.getElementById('ruleta-status');
 const canvasContainer = document.getElementById('canvas-container');
 
 setInterval(() => {
-    if(!juegoActivo) return;
+    if(!juegoActivo || juegoPausado) return;
+    
+    // Primero reseteamos la escala a la normalidad SIEMPRE
+    resetCursorScale();
+    
+    // Luego activamos el fantasma por 1.2 segundos usando el reloj maestro
+    ghostUntil = Date.now() + 1200;
+
     const modos = ['NORMAL', 'INVERTIDO', 'GIGANTE', 'VISTA CENITAL'];
     estadoRuleta = modos[Math.floor(Math.random() * modos.length)];
     
     uiStatus.classList.add('alerta');
-    if (!cursorFisico.isSensor) { Body.scale(cursorFisico, 1 / escalaActual, 1 / escalaActual); escalaActual = 1; }
     canvasContainer.classList.remove('vista-cenital'); 
 
-    if (estadoRuleta === 'NORMAL') { uiStatus.innerText = 'ESTABILIDAD NORMAL'; if (!cursorFisico.isSensor) cursorFisico.render.fillStyle = cNegro; } 
-    else if (estadoRuleta === 'INVERTIDO') { uiStatus.innerText = '¡MANO TORPE! (Cursor Invertido)'; if (!cursorFisico.isSensor) cursorFisico.render.fillStyle = cRojo; } 
-    else if (estadoRuleta === 'GIGANTE') { uiStatus.innerText = '¡CAÑA PESADA! (Cursor Giant)'; if (!cursorFisico.isSensor) { escalaActual = 3; Body.scale(cursorFisico, escalaActual, escalaActual); cursorFisico.render.fillStyle = cCian; } }
-    else if (estadoRuleta === 'VISTA CENITAL') { uiStatus.innerText = '¡VISTA CENITAL! (Perspectiva Isométrica)'; canvasContainer.classList.add('vista-cenital'); if (!cursorFisico.isSensor) cursorFisico.render.fillStyle = cNegro; }
+    if (estadoRuleta === 'NORMAL') { 
+        uiStatus.innerText = 'ESTABILIDAD NORMAL'; 
+        cursorFisico.render.fillStyle = cNegro; 
+    } 
+    else if (estadoRuleta === 'INVERTIDO') { 
+        uiStatus.innerText = '¡MANO TORPE! (Cursor Invertido)'; 
+        cursorFisico.render.fillStyle = cRojo; 
+    } 
+    else if (estadoRuleta === 'GIGANTE') { 
+        uiStatus.innerText = '¡CAÑA PESADA! (Cursor Gigante)'; 
+        escalaActual = 3; 
+        Body.scale(cursorFisico, escalaActual, escalaActual); 
+        cursorFisico.render.fillStyle = cCian; 
+    }
+    else if (estadoRuleta === 'VISTA CENITAL') { 
+        uiStatus.innerText = '¡VISTA CENITAL! (Perspectiva Isométrica)'; 
+        canvasContainer.classList.add('vista-cenital'); 
+        cursorFisico.render.fillStyle = cNegro; 
+    }
 
     setTimeout(() => uiStatus.classList.remove('alerta'), 1000);
+
 }, 8000); 
 
 // Atajo Tecla N
 window.addEventListener('keydown', (e) => {
-    if(e.key.toLowerCase() === 'n' && juegoActivo) {
+    if(e.key.toLowerCase() === 'n' && juegoActivo && !juegoPausado) {
         currentLevel++; cargarNivel(currentLevel);
     }
 });

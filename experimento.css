@@ -8,9 +8,9 @@ body {
     cursor: none; 
 }
 
-/* Botones y UI */
 button { font-family: 'Space Grotesk', sans-serif; cursor: pointer; }
 
+/* Botón Volver (Izquierda) */
 .back-home { 
     position: absolute; bottom: 30px; left: 30px; padding: 12px 25px; 
     background-color: #FEFBF2; color: #9c3d42; text-decoration: none; 
@@ -20,6 +20,17 @@ button { font-family: 'Space Grotesk', sans-serif; cursor: pointer; }
 }
 .back-home:hover { transform: scale(1.05); background-color: #9c3d42; color: #FEFBF2; }
 
+/* Botón Ayuda (Derecha) */
+.help-btn {
+    position: absolute; bottom: 30px; right: 30px; padding: 12px 25px; 
+    background-color: #1a0a0b; color: #FEFBF2; border: none;
+    font-weight: 800; border-radius: 30px; z-index: 100; 
+    box-shadow: 0 8px 20px rgba(26, 10, 11, 0.3); transition: 0.3s; 
+    text-transform: uppercase; font-size: 1rem;
+}
+.help-btn:hover { transform: scale(1.05); background-color: #A6DDE5; color: #1a0a0b; }
+
+/* Avisos y Marcadores */
 .ui-container { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); text-align: center; z-index: 10; pointer-events: none; width: 100%; }
 #ruleta-status { font-size: 2.8rem; color: #9c3d42; text-transform: uppercase; text-shadow: 3px 3px 0px #FEFBF2; transition: 0.3s; margin-bottom: 10px; }
 #ruleta-status.alerta { color: #1a0a0b; transform: scale(1.15); }
@@ -33,7 +44,7 @@ button { font-family: 'Space Grotesk', sans-serif; cursor: pointer; }
     z-index: 10; pointer-events: none; box-shadow: 0 10px 0px rgba(26, 10, 11, 0.2);
 }
 
-/* Pantallas Overlay */
+/* Pantallas Overlay (Generales) */
 .overlay-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255, 182, 193, 0.9); z-index: 2000; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; cursor: default; }
 .overlay-box { background: #FEFBF2; padding: 50px; border-radius: 30px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2); max-width: 600px; width: 90%; border: 4px solid #1a0a0b; }
 .overlay-box h2 { color: #1a0a0b; font-size: 2.5rem; margin-bottom: 15px; letter-spacing: -1px; }
@@ -41,20 +52,34 @@ button { font-family: 'Space Grotesk', sans-serif; cursor: pointer; }
 .overlay-box button { padding: 15px 40px; background: #9c3d42; color: #fff; border: none; border-radius: 30px; font-size: 1.2rem; font-weight: 800; transition: 0.3s; margin-top: 20px; }
 .overlay-box button:hover { background: #1a0a0b; transform: translateY(-3px); }
 
+/* --- DISEÑO ESPECÍFICO MANUAL DE AYUDA --- */
+.help-box { max-width: 800px; padding: 40px; }
+.help-content { display: flex; flex-direction: column; gap: 20px; text-align: left; margin-bottom: 30px; }
+.help-item { display: flex; align-items: center; gap: 20px; background: rgba(255, 182, 193, 0.3); padding: 15px 20px; border-radius: 15px; }
+.h-text { font-family: 'Segoe UI', sans-serif; font-size: 1.1rem; color: #1a0a0b; line-height: 1.4; }
+.h-icon { width: 40px; height: 40px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; }
+
+/* Mini-Ilustraciones CSS */
+.icon-bola { background: #1a0a0b; border-radius: 50%; }
+.icon-prohibido { background: #A6DDE5; color: #8C2041; border: 3px solid #1a0a0b; font-family: 'Space Grotesk', sans-serif; }
+.icon-puntos { background: #8C2041; border: 3px solid #1a0a0b; }
+.icon-puntos .tri { width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 18px solid #FEFBF2; }
+.icon-madera { background: #E8D5B1; border: 3px solid #1a0a0b; border-radius: 4px; }
+.icon-ruleta { text-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
+
 /* Ruleta Visual */
 .ruleta-color-container { margin: 30px 0; display: flex; flex-direction: column; align-items: center; gap: 15px; }
 #ruleta-color-box { width: 100px; height: 100px; background-color: #1a0a0b; border-radius: 20px; border: 4px solid #1a0a0b; transition: background-color 0.1s; }
 #ruleta-color-name { font-size: 2rem; color: #1a0a0b; text-transform: uppercase; }
 
-/* Tabla de Puntuaciones y Formulario */
+/* Formulario */
 .score-registration { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px; padding-top: 20px; border-top: 2px dashed #cfcbc0; }
-#player-name { padding: 15px 20px; font-size: 1.2rem; font-family: 'Space Grotesk', sans-serif; font-weight: bold; border: 3px solid #1a0a0b; border-radius: 15px; width: 100%; text-align: center; outline: none; background: #fff; color: #1a0a0b; }
+#player-name { padding: 15px 20px; font-size: 1.2rem; font-family: 'Space Grotesk', sans-serif; font-weight: bold; border: 3px solid #1a0a0b; border-radius: 15px; width: 100%; text-align: center; outline: none; }
 #player-name:focus { border-color: #A6DDE5; box-shadow: 0 0 15px rgba(166, 221, 229, 0.6); }
 
 .leaderboard-list { list-style: none; padding: 0; margin: 0; width: 100%; text-align: left; }
 .leaderboard-list li { display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: 800; color: #1a0a0b; padding: 15px 20px; border-bottom: 2px solid #cfcbc0; }
 .leaderboard-list li span:last-child { color: #9c3d42; }
 
-/* Canvas y Vista Cenital */
 #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; transform-origin: center center; transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .vista-cenital { transform: perspective(1000px) rotateX(60deg) scale(0.85) translateY(-100px); }
