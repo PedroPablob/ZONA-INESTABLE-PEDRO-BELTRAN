@@ -44,7 +44,7 @@ button { font-family: 'Space Grotesk', sans-serif; cursor: pointer; }
     z-index: 10; pointer-events: none; box-shadow: 0 10px 0px rgba(26, 10, 11, 0.2);
 }
 
-/* Pantallas Overlay (Generales) */
+/* Pantallas Overlay */
 .overlay-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255, 182, 193, 0.9); z-index: 2000; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; cursor: default; }
 .overlay-box { background: #FEFBF2; padding: 50px; border-radius: 30px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2); max-width: 600px; width: 90%; border: 4px solid #1a0a0b; }
 .overlay-box h2 { color: #1a0a0b; font-size: 2.5rem; margin-bottom: 15px; letter-spacing: -1px; }
@@ -52,14 +52,14 @@ button { font-family: 'Space Grotesk', sans-serif; cursor: pointer; }
 .overlay-box button { padding: 15px 40px; background: #9c3d42; color: #fff; border: none; border-radius: 30px; font-size: 1.2rem; font-weight: 800; transition: 0.3s; margin-top: 20px; }
 .overlay-box button:hover { background: #1a0a0b; transform: translateY(-3px); }
 
-/* --- DISEÑO ESPECÍFICO MANUAL DE AYUDA --- */
+/* Manual de Ayuda */
 .help-box { max-width: 800px; padding: 40px; }
 .help-content { display: flex; flex-direction: column; gap: 20px; text-align: left; margin-bottom: 30px; }
 .help-item { display: flex; align-items: center; gap: 20px; background: rgba(255, 182, 193, 0.3); padding: 15px 20px; border-radius: 15px; }
 .h-text { font-family: 'Segoe UI', sans-serif; font-size: 1.1rem; color: #1a0a0b; line-height: 1.4; }
 .h-icon { width: 40px; height: 40px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; }
 
-/* Mini-Ilustraciones CSS */
+/* Iconos de Guía */
 .icon-bola { background: #1a0a0b; border-radius: 50%; }
 .icon-prohibido { background: #A6DDE5; color: #8C2041; border: 3px solid #1a0a0b; font-family: 'Space Grotesk', sans-serif; }
 .icon-puntos { background: #8C2041; border: 3px solid #1a0a0b; }
@@ -72,14 +72,19 @@ button { font-family: 'Space Grotesk', sans-serif; cursor: pointer; }
 #ruleta-color-box { width: 100px; height: 100px; background-color: #1a0a0b; border-radius: 20px; border: 4px solid #1a0a0b; transition: background-color 0.1s; }
 #ruleta-color-name { font-size: 2rem; color: #1a0a0b; text-transform: uppercase; }
 
-/* Formulario */
+/* Registro e Historial */
 .score-registration { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px; padding-top: 20px; border-top: 2px dashed #cfcbc0; }
-#player-name { padding: 15px 20px; font-size: 1.2rem; font-family: 'Space Grotesk', sans-serif; font-weight: bold; border: 3px solid #1a0a0b; border-radius: 15px; width: 100%; text-align: center; outline: none; }
+#player-name { padding: 15px 20px; font-size: 1.2rem; font-family: 'Space Grotesk', sans-serif; font-weight: bold; border: 3px solid #1a0a0b; border-radius: 15px; width: 100%; text-align: center; outline: none; background: #fff; color: #1a0a0b; }
 #player-name:focus { border-color: #A6DDE5; box-shadow: 0 0 15px rgba(166, 221, 229, 0.6); }
 
 .leaderboard-list { list-style: none; padding: 0; margin: 0; width: 100%; text-align: left; }
 .leaderboard-list li { display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: 800; color: #1a0a0b; padding: 15px 20px; border-bottom: 2px solid #cfcbc0; }
 .leaderboard-list li span:last-child { color: #9c3d42; }
 
+/* Canvas y Vista Cenital 3D */
 #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; transform-origin: center center; transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.vista-cenital { transform: perspective(1000px) rotateX(60deg) scale(0.85) translateY(-100px); }
+
+/* SOLUCIÓN: Eliminado translateY(-100px) para evitar saltos de pantalla hacia arriba */
+.vista-cenital { 
+    transform: perspective(1000px) rotateX(60deg) scale(0.85); 
+}

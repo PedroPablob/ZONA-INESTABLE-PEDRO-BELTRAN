@@ -45,7 +45,6 @@ let juegoPausado = false;
 let todasLasFichas = []; 
 let todaLaEstructura = []; 
 
-// RELOJ ABSOLUTO PARA EL MODO FANTASMA (Solución al Bug)
 let ghostUntil = 0;
 
 let globalMouseX = window.innerWidth / 2;
@@ -87,11 +86,11 @@ const cursorFisico = Bodies.circle(ratonX, ratonY, 30, {
 });
 World.add(world, cursorFisico);
 
-// Función para resetear la escala de la bola sin errores
 function resetCursorScale() {
     if (escalaActual !== 1) {
         Body.scale(cursorFisico, 1 / escalaActual, 1 / escalaActual);
         escalaActual = 1;
+        Body.setPosition(cursorFisico, { x: ratonX, y: ratonY + cameraY });
     }
 }
 
@@ -106,7 +105,6 @@ function limpiarMundo() {
     cameraY = 0;
     actualizarCamara();
     
-    // Reseteos seguros
     resetCursorScale();
     estadoRuleta = 'NORMAL';
     document.getElementById('ruleta-status').innerText = 'ESTABILIDAD NORMAL';
@@ -114,12 +112,10 @@ function limpiarMundo() {
     cursorFisico.render.fillStyle = cNegro;
     document.getElementById('canvas-container').classList.remove('vista-cenital'); 
     
-    // Teletransporte al ratón actual
     ratonX = globalMouseX; 
     ratonY = globalMouseY;
     Body.setPosition(cursorFisico, { x: ratonX, y: ratonY + cameraY });
 
-    // ACTIVAMOS MODO FANTASMA INICIAL POR 2 SEGUNDOS
     ghostUntil = Date.now() + 2000;
 }
 
@@ -234,7 +230,6 @@ function actualizarCamara() { Render.lookAt(render, { min: { x: 0, y: cameraY },
 Events.on(engine, 'beforeUpdate', () => {
     if (!juegoActivo || juegoPausado) return;
 
-    // LÓGICA DE FANTASMA BLINDADA CON EL RELOJ ABSOLUTO
     if (Date.now() < ghostUntil) {
         if (!cursorFisico.isSensor) {
             cursorFisico.isSensor = true;
@@ -328,15 +323,18 @@ function toggleHelp() {
             engine.timing.timeScale = 1; 
             ratonX = globalMouseX; ratonY = globalMouseY; 
             document.body.style.cursor = 'none';
-            
-            // Damos 1 segundo extra de gracia al quitar la pausa para evitar accidentes
             ghostUntil = Date.now() + 1000;
         }, 500);
     }
 }
 if(btnHelp) btnHelp.addEventListener('click', toggleHelp);
 if(btnCloseHelp) btnCloseHelp.addEventListener('click', toggleHelp);
-window.addEventListener('keydown', (e) => { if(e.key.toLowerCase() === 'h') toggleHelp(); });
+window.addEventListener('keydown', (e) => { 
+    if (e.key.toLowerCase() === 'h') {
+        if (document.activeElement.tagName === 'INPUT' || !juegoActivo) return;
+        toggleHelp(); 
+    }
+});
 
 // --- PANTALLAS DE JUEGO ---
 const introScreen = document.getElementById('intro-screen');
@@ -357,8 +355,16 @@ setTimeout(() => {
     ruletaBox.style.backgroundColor = palette[colorProhibido];
     ruletaName.innerText = `TU COLOR: ${colorProhibido}`; 
     ruletaName.style.color = cNegro; 
-    document.getElementById('instruccion-juego').innerText = `No dejes caer tu color prohibido: ${colorProhibido}`;
-    document.getElementById('instruccion-juego').style.color = palette[colorProhibido];
+    
+    // --- SOLUCIÓN DEL CAMUFLAJE BLANCO EN EL TEXTO SUPERIOR ---
+    const instruccionJuego = document.getElementById('instruccion-juego');
+    instruccionJuego.innerText = `No dejes caer tu color prohibido: ${colorProhibido}`;
+    if (colorProhibido === 'BLANCO') {
+        instruccionJuego.style.color = cNegro; // Si es blanco lo pintamos de negro para que se lea
+    } else {
+        instruccionJuego.style.color = palette[colorProhibido]; // Si es otro color, mantiene su color
+    }
+    
     btnStart.style.opacity = 1; btnStart.style.pointerEvents = 'auto';
 }, 3000);
 
@@ -438,17 +444,14 @@ function mostrarLeaderboard(scores) {
     setTimeout(() => leaderboardScreen.style.opacity = 1, 50);
 }
 
-// --- LA RULETA DEL CAOS (CORREGIDA AL 100%) ---
+// --- LA RULETA DEL CAOS ---
 const uiStatus = document.getElementById('ruleta-status');
 const canvasContainer = document.getElementById('canvas-container');
 
 setInterval(() => {
     if(!juegoActivo || juegoPausado) return;
     
-    // Primero reseteamos la escala a la normalidad SIEMPRE
     resetCursorScale();
-    
-    // Luego activamos el fantasma por 1.2 segundos usando el reloj maestro
     ghostUntil = Date.now() + 1200;
 
     const modos = ['NORMAL', 'INVERTIDO', 'GIGANTE', 'VISTA CENITAL'];
@@ -460,21 +463,25 @@ setInterval(() => {
     if (estadoRuleta === 'NORMAL') { 
         uiStatus.innerText = 'ESTABILIDAD NORMAL'; 
         cursorFisico.render.fillStyle = cNegro; 
+        Body.setPosition(cursorFisico, { x: ratonX, y: ratonY + cameraY });
     } 
     else if (estadoRuleta === 'INVERTIDO') { 
         uiStatus.innerText = '¡MANO TORPE! (Cursor Invertido)'; 
         cursorFisico.render.fillStyle = cRojo; 
+        Body.setPosition(cursorFisico, { x: window.innerWidth - ratonX, y: (window.innerHeight - ratonY) + cameraY });
     } 
     else if (estadoRuleta === 'GIGANTE') { 
         uiStatus.innerText = '¡CAÑA PESADA! (Cursor Gigante)'; 
         escalaActual = 3; 
         Body.scale(cursorFisico, escalaActual, escalaActual); 
+        Body.setPosition(cursorFisico, { x: ratonX, y: ratonY + cameraY });
         cursorFisico.render.fillStyle = cCian; 
     }
     else if (estadoRuleta === 'VISTA CENITAL') { 
         uiStatus.innerText = '¡VISTA CENITAL! (Perspectiva Isométrica)'; 
         canvasContainer.classList.add('vista-cenital'); 
         cursorFisico.render.fillStyle = cNegro; 
+        Body.setPosition(cursorFisico, { x: ratonX, y: ratonY + cameraY });
     }
 
     setTimeout(() => uiStatus.classList.remove('alerta'), 1000);
