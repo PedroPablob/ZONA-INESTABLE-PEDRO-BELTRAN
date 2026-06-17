@@ -1,86 +1,102 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-        
-body {
-    background-color: #ffb6c1; 
-    overflow: hidden; 
-    font-family: 'Space Grotesk', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;700&display=swap');
+
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #050505;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     user-select: none;
-    cursor: none; 
 }
 
-button { font-family: 'Space Grotesk', sans-serif; cursor: pointer; }
-
-/* Botón Volver */
-.back-home { 
-    position: absolute; bottom: 30px; left: 30px; padding: 12px 25px; 
-    background-color: #FEFBF2; color: #9c3d42; text-decoration: none; 
-    font-weight: 800; border-radius: 30px; z-index: 100; 
-    box-shadow: 0 8px 20px rgba(156, 61, 66, 0.2); transition: 0.3s; 
-    cursor: pointer; 
-}
-.back-home:hover { transform: scale(1.05); background-color: #9c3d42; color: #FEFBF2; }
-
-/* Botón Ayuda */
-.help-btn {
-    position: absolute; bottom: 30px; right: 30px; padding: 12px 25px; 
-    background-color: #1a0a0b; color: #FEFBF2; border: none;
-    font-weight: 800; border-radius: 30px; z-index: 100; 
-    box-shadow: 0 8px 20px rgba(26, 10, 11, 0.3); transition: 0.3s; 
-    font-size: 1rem;
-}
-.help-btn:hover { transform: scale(1.05); background-color: #A6DDE5; color: #1a0a0b; }
-
-/* Avisos y Marcadores */
-.ui-container { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); text-align: center; z-index: 10; pointer-events: none; width: 100%; }
-#ruleta-status { font-size: 2.8rem; color: #9c3d42; text-shadow: 3px 3px 0px #FEFBF2; transition: 0.3s; margin-bottom: 10px; }
-#ruleta-status.alerta { color: #1a0a0b; transform: scale(1.15); }
-.ui-container p { color: #1a0a0b; font-weight: 700; font-size: 1.2rem; background: rgba(254, 251, 242, 0.8); display: inline-block; padding: 5px 20px; border-radius: 20px; }
-
-.level-indicator { position: absolute; top: 30px; left: 30px; font-size: 3rem; color: #FEFBF2; text-shadow: 2px 2px 0 #1a0a0b; font-weight: 800; z-index: 10; pointer-events: none; }
-
-.score-counter {
-    position: absolute; top: 30px; right: 30px; font-size: 2.2rem; color: #1a0a0b; background: #FEFBF2;
-    padding: 10px 40px; border-radius: 40px; font-weight: 800; border: 4px solid #1a0a0b;
-    z-index: 10; pointer-events: none; box-shadow: 0 10px 0px rgba(26, 10, 11, 0.2);
+canvas {
+    display: block;
 }
 
-/* Pantallas Overlay (Generales) */
-.overlay-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255, 182, 193, 0.9); z-index: 2000; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; cursor: default; }
-.overlay-box { background: #FEFBF2; padding: 50px; border-radius: 30px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2); max-width: 600px; width: 90%; border: 4px solid #1a0a0b; }
-.overlay-box h2 { color: #1a0a0b; font-size: 2.5rem; margin-bottom: 15px; letter-spacing: -1px; }
-.overlay-box p { font-family: 'Segoe UI', sans-serif; font-size: 1.2rem; color: #4a3b3c; margin-bottom: 30px; line-height: 1.5; }
-.overlay-box button { padding: 15px 40px; background: #9c3d42; color: #fff; border: none; border-radius: 30px; font-size: 1.2rem; font-weight: 800; transition: 0.3s; margin-top: 20px; }
-.overlay-box button:hover { background: #1a0a0b; transform: translateY(-3px); }
+#top-bar {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    z-index: 10;
+    transition: opacity 0.5s ease;
+}
 
-/* Manual de Ayuda */
-.help-box { max-width: 800px; padding: 40px; }
-.help-content { display: flex; flex-direction: column; gap: 20px; text-align: left; margin-bottom: 30px; }
-.help-item { display: flex; align-items: center; gap: 20px; background: rgba(255, 182, 193, 0.3); padding: 15px 20px; border-radius: 15px; }
-.h-text { font-family: 'Segoe UI', sans-serif; font-size: 1.1rem; color: #1a0a0b; line-height: 1.4; }
-.h-icon { width: 40px; height: 40px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; }
+.ui-box {
+    background-color: rgba(15, 18, 22, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 25px;
+    border-radius: 8px;
+    color: #e0e5eb;
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+}
 
-/* Iconos de Guía */
-.icon-bola { background: #1a0a0b; border-radius: 50%; }
-.icon-prohibido { background: #A6DDE5; color: #8C2041; border: 3px solid #1a0a0b; font-family: 'Space Grotesk', sans-serif; }
-.icon-puntos { background: #8C2041; border: 3px solid #1a0a0b; }
-.icon-puntos .tri { width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 18px solid #FEFBF2; }
-.icon-madera { background: #E8D5B1; border: 3px solid #1a0a0b; border-radius: 4px; }
-.icon-ruleta { text-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
+.target-box {
+    border: 1px solid #7ab1b8; /* Cambiará dinámicamente por JS */
+}
 
-/* Ruleta Visual */
-.ruleta-color-container { margin: 30px 0; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-#ruleta-color-box { width: 100px; height: 100px; background-color: #1a0a0b; border-radius: 20px; border: 4px solid #1a0a0b; transition: background-color 0.1s; }
-#ruleta-color-name { font-size: 2rem; color: #1a0a0b; font-weight: 700; }
+#controls-hint {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 14px;
+    z-index: 10;
+    pointer-events: none;
+}
 
-/* Registro e Historial */
-.score-registration { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px; padding-top: 20px; border-top: 2px dashed #cfcbc0; }
-#player-name { padding: 15px 20px; font-size: 1.2rem; font-family: 'Space Grotesk', sans-serif; font-weight: bold; border: 3px solid #1a0a0b; border-radius: 15px; width: 100%; text-align: center; outline: none; background: #fff; color: #1a0a0b; }
-#player-name:focus { border-color: #A6DDE5; box-shadow: 0 0 15px rgba(166, 221, 229, 0.6); }
+#controls-hint b {
+    color: rgba(255, 255, 255, 0.7);
+}
 
-.leaderboard-list { list-style: none; padding: 0; margin: 0; width: 100%; text-align: left; }
-.leaderboard-list li { display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: 800; color: #1a0a0b; padding: 15px 20px; border-bottom: 2px solid #cfcbc0; }
-.leaderboard-list li span:last-child { color: #9c3d42; }
+/* OVERLAY DE RULETA */
+.overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #08090a;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+    transition: opacity 0.5s ease;
+}
 
-/* Canvas y Vista Cenital 3D */
-#canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; transform-origin: center center; transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.vista-cenital { transform: perspective(1000px) rotateX(60deg) scale(0.85); }
+.roulette-container {
+    text-align: center;
+    background-color: #14161a;
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+
+.roulette-container h2 {
+    color: #e0e5eb;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-size: 20px;
+}
+
+.color-box {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    margin: 0 auto 20px auto;
+    border: 2px solid rgba(255,255,255,0.8);
+    background-color: transparent;
+    transition: background-color 0.05s ease;
+}
+
+#roulette-name {
+    margin: 0;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
