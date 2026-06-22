@@ -185,13 +185,23 @@ gravitudTitle?.addEventListener('click', (e) => {
         clickFase = 1;
         gravitudTitle.style.animation = 'none';
 
-        for (let i = letterSpans.length - 1; i >= 0; i--) {
-            const s = letterSpans[i];
+        // Detectar exactamente qué letra recibió el clic
+        let clickedIndex = Math.floor(letterSpans.length / 2); // Centro por defecto por si le da al espacio
+        if (e.target.tagName.toLowerCase() === 'span') {
+            clickedIndex = parseInt(e.target.getAttribute('data-index'));
+        }
+
+        // Crear la onda expansiva
+        letterSpans.forEach((s) => {
             if (s.textContent.trim() !== '') {
-                const delay = (letterSpans.length - 1 - i) * 80; 
+                const currentIndex = parseInt(s.getAttribute('data-index'));
+                const distance = Math.abs(currentIndex - clickedIndex);
+                // 40ms de retraso por cada "letra" de distancia desde el clic
+                const delay = distance * 40; 
+                
                 setTimeout(() => { s.classList.add('letter-blackened'); }, delay);
             }
-        }
+        });
 
     } 
     else if (clickFase === 1) {
@@ -206,7 +216,9 @@ gravitudTitle?.addEventListener('click', (e) => {
                 if (s.textContent.trim() !== '') {
                     const delayExplosion = i * 30; 
                     setTimeout(() => {
-                        s.style.color = '#9c3d42'; 
+                        // Cambio: Las letras explotan en color negro absoluto
+                        s.style.color = '#000000'; 
+                        
                         s.className = ''; 
                         s.style.animation = 'none'; 
                         void s.offsetWidth; 
