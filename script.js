@@ -286,12 +286,10 @@ const inlineVideoTitle = document.getElementById('inlineVideoTitle');
 const prevVideoBtn = document.getElementById('prevVideoBtn');
 const nextVideoBtn = document.getElementById('nextVideoBtn');
 
-// Paleta de colores claros sin negro ni café oscuro
 const uiColors = ['#A6DDE5', '#F5BEBF', '#9c3d42']; 
 let currentVideoIndex = 0;
 let videoDataList = [];
 
-// Recolectar datos de las tarjetas
 document.querySelectorAll('.interactive-card').forEach((card, index) => {
     const videoSrc = card.getAttribute('data-video');
     const title = card.querySelector('h3').textContent;
@@ -312,13 +310,11 @@ document.querySelectorAll('.interactive-card').forEach((card, index) => {
 function playCurrentVideo() {
     if(videoDataList.length === 0) return;
     
-    // Cambiar datos del video
     const data = videoDataList[currentVideoIndex];
     inlineVideoPlayer.src = data.src;
     if(inlineVideoTitle) inlineVideoTitle.textContent = data.title;
     inlineVideoPlayer.play();
     
-    // Cambiar color aleatorio de la paleta
     const randomColor = uiColors[Math.floor(Math.random() * uiColors.length)];
     inlineVideoTitle.style.color = randomColor;
     prevVideoBtn.style.color = randomColor;
@@ -347,8 +343,7 @@ if(closeInlineVideoBtn) {
     });
 }
 
-
-// --- Colores Piezas 3D (RESTAURADOS EXACTOS AL ORIGINAL DEL INICIO) ---
+// --- Colores Piezas 3D ---
 const paletaColores = ['#A6DDE5', '#9c3d42', '#ffffff', '#F5BEBF'];
 function activarCambioColor(elemento) {
     if (!elemento) return;
@@ -473,10 +468,18 @@ const pixMatrix = document.getElementById('pixMatrix');
 if (btnPix && pixMatrix) {
     btnPix.addEventListener('click', () => {
         const isOpen = pixMatrix.classList.contains('open');
+        const iframe = pixMatrix.querySelector('.pix-viewer');
         
         if (!isOpen) {
             pixMatrix.classList.add('open');
             btnPix.textContent = 'CERRAR MATRIZ PIX';
+            
+            // Forzar un pequeño redraw del iframe en caso de que esté suspendido
+            if (iframe) {
+                const currentSrc = iframe.src;
+                iframe.src = '';
+                setTimeout(() => { iframe.src = currentSrc; }, 10);
+            }
             
             setTimeout(() => {
                 pixMatrix.scrollIntoView({ behavior: 'smooth', block: 'center' });
