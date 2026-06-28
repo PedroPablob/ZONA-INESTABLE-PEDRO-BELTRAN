@@ -381,17 +381,17 @@ timelineBtns.forEach(btn => {
 });
 
 // --- LÓGICA DESPLEGABLE MATRIZ PIX 1 (JUEGO MESA) ---
-const btnPix = document.getElementById('btnPix');
-const pixMatrix = document.getElementById('pixMatrix');
+const btnPixFisico = document.getElementById('btnPixFisico');
+const pixMatrixFisico = document.getElementById('pixMatrixFisico');
 
-if (btnPix && pixMatrix) {
-    btnPix.addEventListener('click', () => {
-        const isOpen = pixMatrix.classList.contains('open');
-        const iframe = pixMatrix.querySelector('.pix-viewer');
+if (btnPixFisico && pixMatrixFisico) {
+    btnPixFisico.addEventListener('click', () => {
+        const isOpen = pixMatrixFisico.classList.contains('open');
+        const iframe = pixMatrixFisico.querySelector('.pix-viewer');
         
         if (!isOpen) {
-            pixMatrix.classList.add('open');
-            btnPix.textContent = 'Cerrar Pix';
+            pixMatrixFisico.classList.add('open');
+            btnPixFisico.textContent = 'Cerrar Pix';
             
             if (iframe) {
                 const currentSrc = iframe.getAttribute('src');
@@ -401,11 +401,11 @@ if (btnPix && pixMatrix) {
             }
             
             setTimeout(() => {
-                pixMatrix.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                pixMatrixFisico.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 300);
         } else {
-            pixMatrix.classList.remove('open');
-            btnPix.textContent = 'Desplegar Pix';
+            pixMatrixFisico.classList.remove('open');
+            btnPixFisico.textContent = 'Desplegar Pix';
         }
     });
 }
