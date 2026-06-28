@@ -391,7 +391,7 @@ if (btnPix && pixMatrix) {
         
         if (!isOpen) {
             pixMatrix.classList.add('open');
-            btnPix.textContent = 'CERRAR MATRIZ PIX';
+            btnPix.textContent = 'Cerrar Pix';
             
             if (iframe) {
                 const currentSrc = iframe.getAttribute('src');
@@ -405,7 +405,7 @@ if (btnPix && pixMatrix) {
             }, 300);
         } else {
             pixMatrix.classList.remove('open');
-            btnPix.textContent = 'DESPLEGAR MATRIZ PIX';
+            btnPix.textContent = 'Desplegar Pix';
         }
     });
 }
@@ -421,7 +421,7 @@ if (btnPixFundamento && pixMatrixFundamento) {
         
         if (!isOpen) {
             pixMatrixFundamento.classList.add('open');
-            btnPixFundamento.textContent = 'CERRAR MATRIZ PIX DIGITAL';
+            btnPixFundamento.textContent = 'Cerrar Pix';
             
             if (iframe) {
                 const currentSrc = iframe.getAttribute('src');
@@ -435,7 +435,7 @@ if (btnPixFundamento && pixMatrixFundamento) {
             }, 300);
         } else {
             pixMatrixFundamento.classList.remove('open');
-            btnPixFundamento.textContent = 'DESPLEGAR MATRIZ PIX DIGITAL';
+            btnPixFundamento.textContent = 'Desplegar Pix';
         }
     });
 }

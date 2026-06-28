@@ -971,7 +971,7 @@ function render() {
 }
 
 // --- BOTONES Y CONTROL DE INTERFAZ ---
-document.getElementById('btn-back').addEventListener('click', () => { window.location.href = 'landing.html'; });
+document.getElementById('btn-back').addEventListener('click', () => { window.location.href = 'index.html'; });
 document.getElementById('btn-restart').addEventListener('click', () => { window.location.reload(); });
 
 document.getElementById('btn-modos-toggle').addEventListener('click', () => {
