@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zona Inestable - Landing Digital</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, 0);
+    </script>
+</head>
+<body>
+
+    <div class="intro-screen" id="introScreen">
+        <div class="intro-hex">
+            <div class="intro-hole"></div>
+        </div>
+        <p class="intro-text">Este sitio contiene efectos de sonido.<br>Se recomienda discreción y revisar tu volumen antes de iniciar.</p>
+        <button class="intro-btn" id="btnAceptar">Aceptar</button>
+    </div>
+
+    <div class="intro-screen hidden" id="transitionScreen">
+        <div class="intro-hex">
+            <div class="intro-hole"></div>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="nav-hex"><div class="nav-hole"></div></div>
+                <span class="nav-brand-text">Zona Inestable</span>
+            </div>
+            
+            <nav class="main-nav">
+                <a href="#intro-juego" class="nav-link" data-target="intro-juego">El Juego</a>
+                <a href="#reglas" class="nav-link" data-target="reglas">¿Cómo se juega?</a>
+                <a href="#componentes" class="nav-link" data-target="componentes">Componentes</a>
+                <a href="#galeria" class="nav-link" data-target="galeria">Galería</a>
+                <a href="#pix-section" class="nav-link" data-target="pix-section">Partitura</a>
+                <a href="#fundamento" class="nav-link" data-target="fundamento">Fundamento</a>
+            </nav>
+
+            <div class="nav-controls">
+                <div class="toggle-wrapper active" id="toggle-sonido">
+                    <div class="toggle-switch"><div class="toggle-knob"></div></div>
+                    <span>Sonido</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="section-indicator" id="sectionIndicator" title="Volver al inicio">
+        <span class="indicator-text">Volver</span>
+    </div>
+
+    <div class="crane-container" id="wreckingBall">
+        <div class="crane-chain"></div>
+        <div class="crane-ring"></div>
+        <div class="crane-ball"></div>
+    </div>
+
+    <div class="screen home-grid" id="home">
+        <div id="bg-patterns" class="bg-patterns-container"></div>
+        <div class="title-bg-overlay"></div>
+
+        <div class="main-title-container">
+            <h1 class="main-title" id="gravitudTitle">ZONA INESTABLE</h1>
+            <div class="subtitle-container" id="subtitleContainer">
+                <p class="subtitle">Bienvenido a la experiencia, desliza para continuar</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="new-section scrollable-screen" id="intro-juego">
+        <div class="ref-container" style="padding-top: 60px;">
+            <div class="ref-title scroll-anim">
+                <span>¿Qué es?</span>
+            </div>
+            <div class="ref-block scroll-anim">
+                <p>Zona Inestable es un juego de mesa que explora las leyes de la física a través de un sistema de estructuras modulares y piezas hexagonales suspendidas. El juego propone una experiencia de tensión constante donde cada jugador altera el centro de masa y la estabilidad del tablero a través del peso y el posicionamiento de los componentes.</p>
+            </div>
+            <div class="qr-showcase scroll-anim image-showcase-container" style="background-color: transparent; padding: 0; box-shadow: none; margin-top: 0;">
+                <img src="fotos/juego de mesa.png" alt="Tablero Zona Inestable" class="responsive-board-img">
+            </div>
+        </div>
+    </div>
+
+    <div class="new-section scrollable-screen" id="reglas" style="padding-bottom: 0;">
+        <div class="ref-container full-width-container" style="padding-top: 40px; max-width: 1200px; margin-bottom: 40px;">
+            <div class="ref-title scroll-anim">
+                <span>¿Cómo se juega?</span>
+            </div>
+            
+            <div class="interactive-rules-wrapper scroll-anim">
+                <div class="rules-timeline">
+                    <div class="timeline-line"></div>
+                    <button class="timeline-btn active" data-target="rule-1">
+                        <div class="timeline-dot">1</div>
+                        <span class="timeline-label">Ensamblar</span>
+                    </button>
+                    <button class="timeline-btn" data-target="rule-2">
+                        <div class="timeline-dot">2</div>
+                        <span class="timeline-label">Girar la ruleta</span>
+                    </button>
+                    <button class="timeline-btn" data-target="rule-3">
+                        <div class="timeline-dot">3</div>
+                        <span class="timeline-label">El golpe</span>
+                    </button>
+                    <button class="timeline-btn" data-target="rule-4">
+                        <div class="timeline-dot">4</div>
+                        <span class="timeline-label">La caída</span>
+                    </button>
+                </div>
+
+                <div class="rules-display-card">
+                    <div class="rule-panel active" id="rule-1">
+                        <div class="rule-visual-side">
+                            <video src="videos/armado.mp4" autoplay loop muted playsinline class="rule-video"></video>
+                        </div>
+                        <div class="rule-text-side">
+                            <span class="rule-step-subtitle">El ecosistema</span>
+                            <h3>Construye la inestabilidad</h3>
+                            <p>Conecta las plataformas y los pilares con sus bases para dar forma al tablero. Posiciona estratégicamente las piezas de colores de manera equitativa. 
+                                ¡Tu creatividad define la dificultad y la jugabilidad!</p>
+                        </div>
+                    </div>
+                    <div class="rule-panel" id="rule-2">
+                        <div class="rule-visual-side">
+                            <video src="videos/giro.mp4" autoplay loop muted playsinline class="rule-video"></video>
+                        </div>
+                        <div class="rule-text-side">
+                            <span class="rule-step-subtitle">Condiciones motrices</span>
+                            <h3>Adaptación constante</h3>
+                            <p>El azar determina cómo jugarás tu turno. Gira la ruleta y adáptate: ¿Te tocará usar solo la mano izquierda, la derecha, o ambas? ¡La estrategia cambia en cada movimiento!</p>
+                        </div>
+                    </div>
+                    <div class="rule-panel" id="rule-3">
+                        <div class="rule-visual-side">
+                            <video src="videos/demolicion.mp4" autoplay loop muted playsinline class="rule-video"></video>
+                        </div>
+                        <div class="rule-text-side">
+                            <span class="rule-step-subtitle">La tensión</span>
+                            <h3>Mide el péndulo</h3>
+                            <p>Utiliza la caña extensora de madera y engancha la bola pesada. Calcula la inercia, mide el movimiento pendular y busca derribar las piezas rivales sin botar las tuyas no quieres perder puntos, ¿verdad?.</p>
+                        </div>
+                    </div>
+                    <div class="rule-panel" id="rule-4">
+                        <div class="rule-visual-side">
+                            <video src="videos/caida.mp4" autoplay loop muted playsinline class="rule-video"></video>
+                        </div>
+                        <div class="rule-text-side">
+                            <span class="rule-step-subtitle">El desenlace</span>
+                            <h3>El colapso total</h3>
+                            <p>Suma puntos por cada pieza rival que logres botar de las plataformas. Pero ten cuidado: si tu golpe derriba la torre entera, pierdes todos tus puntos y finaliza la partida de inmediato.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quote-band scroll-anim" id="quoteBand">
+            <div class="falling-shapes-container" id="fallingShapesContainer"></div>
+            <p class="quote-text">"Esta interacción de fuerzas tangibles y mecánicas es el fundamento físico que da origen a la abstracción digital y sensorial."</p>
+        </div>
+    </div>
+
+    <div class="new-section scrollable-screen" id="mecanicas" style="padding-top: 20px;">
+        <div class="ref-container full-width-container" style="max-width: 1200px;">
+            <div class="ref-block scroll-anim" style="width: 100%;">
+                <h2>Mecánicas físicas</h2>
+                
+                <div class="mechanics-grid">
+                    <div class="mechanic-card interactive-card" data-video="videos/ESTRUCTURA.mp4" data-index="0">
+                        <h3>La estructura</h3>
+                        <p>Los jugadores construyen el tablero de manera modular, acoplando plataformas hexagonales. Esto genera un ecosistema suspendido frágil donde cada decisión altera el centro de masa.</p>
+                    </div>
+                    <div class="mechanic-card interactive-card" data-video="videos/CAÑA.mp4" data-index="1">
+                        <h3>El objetivo</h3>
+                        <p>Haciendo uso de una caña extendible, el jugador debe derribar la mayor cantidad de piezas rivales fuera de la estructura, evitando el colapso total y cuidando sus propias fichas.</p>
+                    </div>
+                    <div class="mechanic-card interactive-card" data-video="videos/RULETA.mp4" data-index="2">
+                        <h3>La ruleta</h3>
+                        <p>El azar dicta las condiciones motrices del turno. La ruleta restringe la interacción obligando al jugador a utilizar "solo mano izquierda", "solo mano derecha", "ambas manos" o "el jugador a tu derecha elige".</p>
+                    </div>
+                </div>
+
+                <div class="inline-video-container" id="inlineVideoContainer">
+                    <div class="inline-video-header">
+                        <span class="inline-video-title" id="inlineVideoTitle">Reproduciendo video</span>
+                        <button class="close-inline-video" id="closeInlineVideo">&times;</button>
+                    </div>
+                    <div class="inline-video-wrapper">
+                        <button class="video-nav-btn" id="prevVideoBtn">&#9664;</button>
+                        <div class="video-screen-frame">
+                            <video id="inlineVideoPlayer" controls></video>
+                        </div>
+                        <button class="video-nav-btn" id="nextVideoBtn">&#9654;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="new-section scrollable-screen" id="componentes">
+        <div class="ref-container" style="padding-top: 40px;">
+            <div class="ref-block scroll-anim">
+                <h2>Los componentes</h2>
+                <div class="components-showcase grid-layout">
+                    <div class="components-group top-pieces">
+                        <div class="component-item">
+                            <div class="scene3d" title="Clic para cambiar color">
+                                <div class="piece3d piece-std" id="piezaEstandar">
+                                    <div class="face-std front"></div><div class="face-std back"></div><div class="face-std right"></div><div class="face-std left"></div><div class="face-std top"></div><div class="face-std bottom"></div>
+                                </div>
+                            </div>
+                            <h4>Pieza estándar</h4>
+                            <p>Valor: 1 Punto<br>Cantidad: 8 por jugador</p>
+                        </div>
+                        <div class="component-item">
+                            <div class="scene3d" title="Clic para cambiar color">
+                                <div class="piece3d piece-spc" id="piezaEspecial">
+                                    <div class="face-spc front"></div><div class="face-spc back"></div><div class="face-spc right"></div><div class="face-spc left"></div><div class="face-spc top"></div><div class="face-spc bottom"></div><div class="roof-face roof-front"></div><div class="roof-face roof-back"></div><div class="roof-face roof-right"></div><div class="roof-face roof-left"></div>
+                                </div>
+                            </div>
+                            <h4>Pieza especial</h4>
+                            <p>Valor: 2 Puntos<br>Cantidad: 2 por jugador</p>
+                        </div>
+                        <div class="component-item cana-wrapper">
+                            <div class="cana-container">
+                                <div class="scene3d cana-cerrada-scene">
+                                    <div class="piece3d piece-cana">
+                                        <div class="piece-stick stick-base">
+                                            <div class="face-stick base-f front"></div><div class="face-stick base-f back"></div><div class="face-stick base-f top"></div><div class="face-stick base-f bottom"></div><div class="face-stick base-f left"></div><div class="face-stick base-f right"></div>
+                                        </div>
+                                        <div class="piece-stick stick-ext">
+                                            <div class="face-stick ext-f front"></div><div class="face-stick ext-f back"></div><div class="face-stick ext-f top"></div><div class="face-stick ext-f bottom"></div><div class="face-stick ext-f left"></div><div class="face-stick ext-f right"></div>
+                                            <div class="cana-string"></div>
+                                            <div class="bola-3d" title="Clic para cambiar color">
+                                                <div class="bola-face-1"></div><div class="bola-face-2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="scene3d cana-extendida-scene" style="display: none;">
+                                    <div class="piece3d piece-cana">
+                                        <div class="piece-stick stick-base">
+                                            <div class="face-stick base-f front"></div><div class="face-stick base-f back"></div><div class="face-stick base-f top"></div><div class="face-stick base-f bottom"></div><div class="face-stick base-f left"></div><div class="face-stick base-f right"></div>
+                                        </div>
+                                        <div class="piece-stick stick-ext ext-opened">
+                                            <div class="face-stick ext-f front"></div><div class="face-stick ext-f back"></div><div class="face-stick ext-f top"></div><div class="face-stick ext-f bottom"></div><div class="face-stick ext-f left"></div><div class="face-stick ext-f right"></div>
+                                            <div class="cana-string"></div>
+                                            <div class="bola-3d" title="Clic para cambiar color">
+                                                <div class="bola-face-1"></div><div class="bola-face-2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <h4>Caña extensora</h4>
+                            <p>Cuenta con dos ajustes de longitud (corta o larga) y una bolas (ligera o pesada). <br><br>Haz click para extender.</p>
+                        </div>
+                    </div>
+                    <div class="components-group bottom-pieces">
+                        <div class="component-item platform-item individual-piece">
+                            <div class="scene3d">
+                                <div class="piece3d piece-hex">
+                                    <div class="face-hex hex-front"></div>
+                                    <div class="center-connector connector-front">
+                                        <div class="connector-layer w4"></div><div class="connector-layer w3"></div><div class="connector-layer w2"></div><div class="connector-layer w1"></div><div class="connector-layer w0"></div><div class="connector-hole hole-hex"></div>
+                                    </div>
+                                    <div class="face-hex hex-back"></div>
+                                    <div class="center-connector connector-back">
+                                        <div class="connector-layer w4"></div><div class="connector-layer w3"></div><div class="connector-layer w2"></div><div class="connector-layer w1"></div><div class="connector-layer w0"></div><div class="connector-hole hole-hex"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <h4>Plataforma</h4>
+                            <p>La superficie modular de juego cuenta con un patrón cuadriculado que permite posicionar las piezas sobre ella.</p>
+                        </div>
+                        <div class="component-item pillar-item individual-piece">
+                            <div class="scene3d">
+                                <div class="piece3d piece-pillar">
+                                    <div class="face-pillar face-grain front"></div>
+                                    <div class="face-pillar face-grain back"></div>
+                                    <div class="face-pillar face-grain left"></div>
+                                    <div class="face-pillar face-grain right"></div>
+                                    <div class="face-pillar top"></div>
+                                    <div class="face-pillar bottom"></div>
+                                </div>
+                            </div>
+                            <h4>Pilar central</h4>
+                            <p>Se trata de la unión central de la plataforma.<br><br>Haz click para unificar.</p>
+                        </div>
+                        <div class="component-item base-item individual-piece">
+                            <div class="scene3d">
+                                <div class="piece3d piece-base">
+                                    <div class="face-circle circle-front"></div>
+                                    <div class="center-connector connector-front">
+                                        <div class="connector-layer w4"></div><div class="connector-layer w3"></div><div class="connector-layer w2"></div><div class="connector-layer w1"></div><div class="connector-layer w0"></div><div class="connector-hole hole-base"></div>
+                                    </div>
+                                    <div class="face-circle circle-back"></div>
+                                </div>
+                            </div>
+                            <h4>Base soporte</h4>
+                            <p>Anclaje al suelo de la estrucuta.</p>
+                        </div>
+                        <div class="component-item assembled-item" style="display: none;">
+                            <div class="scene3d">
+                                <div class="piece3d piece-assembled">
+                                    <div class="piece3d piece-hex as-hex">
+                                        <div class="face-hex hex-front"></div>
+                                        <div class="center-connector connector-front">
+                                            <div class="connector-layer w4"></div><div class="connector-layer w3"></div><div class="connector-layer w2"></div><div class="connector-layer w1"></div><div class="connector-layer w0"></div><div class="connector-hole hole-hex"></div>
+                                        </div>
+                                        <div class="face-hex hex-back"></div>
+                                        <div class="center-connector connector-back">
+                                            <div class="connector-layer w4"></div><div class="connector-layer w3"></div><div class="connector-layer w2"></div><div class="connector-layer w1"></div><div class="connector-layer w0"></div><div class="connector-hole hole-hex"></div>
+                                        </div>
+                                    </div>
+                                    <div class="piece3d piece-pillar as-pillar">
+                                        <div class="face-pillar face-grain front"></div>
+                                        <div class="face-pillar face-grain back"></div>
+                                        <div class="face-pillar face-grain left"></div>
+                                        <div class="face-pillar face-grain right"></div>
+                                        <div class="face-pillar top"></div>
+                                        <div class="face-pillar bottom"></div>
+                                    </div>
+                                    <div class="piece3d piece-base as-base">
+                                        <div class="face-circle circle-front"></div>
+                                        <div class="center-connector connector-front">
+                                            <div class="connector-layer w4"></div><div class="connector-layer w3"></div><div class="connector-layer w2"></div><div class="connector-layer w1"></div><div class="connector-layer w0"></div><div class="connector-hole hole-base"></div>
+                                        </div>
+                                        <div class="face-circle circle-back"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <h4>Estructura ensamblada</h4>
+                            <p>Haz clic para desarmar las piezas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="new-section scrollable-screen" id="galeria" style="overflow: hidden; width: 100%;">
+        <div class="ref-container full-width-container" style="padding-top: 40px; max-width: 1400px; width: 100%;">
+            <div class="ref-block scroll-anim" style="width: 100%;">
+                <h2>El juego en acción</h2>
+            </div>
+            <div class="marquee-wrapper scroll-anim">
+                <div class="marquee-track">
+                    <div class="marquee-group">
+                        <div class="gallery-item"><img src="fotos/foto1.jpg" alt="Registro de juego 1" class="gallery-img"></div>
+                        <div class="gallery-item"><img src="fotos/foto2.jpg" alt="Registro de juego 2" class="gallery-img"></div>
+                        <div class="gallery-item"><img src="fotos/foto3.jpg" alt="Registro de juego 3" class="gallery-img"></div>
+                        <div class="gallery-item"><img src="fotos/foto4.jpg" alt="Registro de juego 4" class="gallery-img"></div>
+                        <div class="gallery-item"><img src="fotos/foto5.jpg" alt="Registro de juego 5" class="gallery-img"></div>
+                        <div class="gallery-item"><img src="fotos/foto6.jpg" alt="Registro de juego 6" class="gallery-img"></div>
+                    </div>
+                    <div class="marquee-group">
+                        <div class="gallery-item"><img src="fotos/foto1.jpg" alt="Registro de juego 1" class="gallery-img"></div>
+                        <div class="gallery-item"><img src="fotos/foto2.jpg" alt="Registro de juego 2" class="gallery-img"></div>
+                        <div class="gallery-item"><img src="fotos/foto3.jpg" alt="Registro de juego 3" class="gallery-img"></div>
+                        <div class="gallery-item"><img src="fotos/foto4.jpg" alt="Registro de juego 4" class="gallery-img"></div>
+                        <div class="gallery-item"><img src="fotos/foto5.jpg" alt="Registro de juego 5" class="gallery-img"></div>
+                        <div class="gallery-item"><img src="fotos/foto6.jpg" alt="Registro de juego 6" class="gallery-img"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="new-section scrollable-screen" id="pix-section" style="padding: 80px 20px;">
+        <div class="ref-container full-width-container" style="max-width: 1200px;">
+            <div class="ref-title scroll-anim">
+                <span>Partitura PIX</span>
+            </div>
+            <div class="pix-container scroll-anim">
+                <p class="pix-description" style="max-width: 800px; text-align: center; margin-bottom: 30px; color: #000000; line-height: 1.6; font-size: 1.1rem;">
+                    La Partitura de Interacción (PIX) documenta formalmente el diálogo táctil y cognitivo entre el jugador y el sistema. Aquí se detalla la secuencia de acciones, desde el montaje de la estructura modular hasta la interacción física con la ruleta y la inercia de la caña extensora, registrando una partida del juego de mesa desde la vista de un jugador.
+                </p>
+                <button class="btn-ghost-style pix-trigger-btn" id="btnPix">Desplegar PIX</button>
+                <div class="pix-matrix-wrapper" id="pixMatrix">
+                    <div class="pix-highlight-box">
+                        <div class="pix-raw-code">
+                            <iframe class="pix-viewer" src="https://eadpucv.github.io/pix/#!/import/eyJ0aXRsZSI6IlBhcnRpZGEgZGUgWm9uYSBJbmVzdGFibGUiLCJsYXlvdXQiOiJwaXgiLCJkZXNjcmlwdGlvbiI6IiIsInNjb3JlcyI6W1t7InN0ZXBfdGl0bGUiOiIiLCJ1c2VyIjoicGl4LXNtaWxpbmcgXCJUZW5nbyBnYW5hcyBkZSBqdWdhciBhbGdvIGNvbiBtaXMgYW1pZ29zLCBqdWdhcsOpIGEgZXN0ZSBqdWVnb1wiIiwiZGlhbG9ndWUiOiJwaXgtaGFuZCBTYWNhciBsYSBjYWphIHkgc2VwYXJhcmxhIGRlIGxhIHRhcGEgcGFyYSBzYWNhciB0b2RhcyBsYXMgcGllemFzIiwic3lzdGVtIjoicGl4LXN0YWNrIENhamEgdGlwbyBjYWrDs24sIGNhZGEgcGllemEgdGllbmUgc3UgbHVnYXIgZGVudHJvIiwibm90ZSI6IiJ9LHsic3RlcF90aXRsZSI6IlByZXBhcmFjacOzbiIsInVzZXIiOiJwaXgtaW50cmlndWVkIFwiQmllbiwgcHJpbWVybyBoYXkgcXVlIGFybWFyIGxhIGVzdHJ1Y3R1cmFcIiIsImRpYWxvZ3VlIjoicGl4LWxpbmsgVG9tYXIgY2FkYSBwaWV6YSBkZSBsYXMgZXN0cnVjdHVyYXMsIGVuc2FtYmxhbmRvIGxhcyBwbGF0YWZvcm1hcyBzb2JyZSBsb3MgcGlsYXJlcyB5IGxvcyBwaWxhcmVzIHNvYnJlIGxhcyBiYXNlcyIsInN5c3RlbSI6IlBsYXRhZm9ybWFzIGhleGFnb25hbGVzIGRlIG1kZiBkZSAzbW0sIHBpbGFyZXMgZGUgbWFkZXJhIHkgYmFzZXMgY2lyY3VsYXJlcyBkZSBtZGYiLCJub3RlIjoiIn0seyJzdGVwX3RpdGxlIjoiIiwidXNlciI6InBpeC1pbnRyaWd1ZWQgXCJMZSBwb25kcmVtb3MgdHJlcyBwbGF0YWZvcm1hcyB5IGRvcyB0b3JyZXMgcGFyYSBxdWUgc2VhIG3DoXMgZGlmaWNpbFwiIiwiZGlhbG9ndWUiOiJwaXgtbGluayBQb25lciBvdHJhcyBwbGF0YWZvcm1hcyBzb2JyZSBkb3MgcGxhdGFmb3JtYXMgcGFyYSBjcmVhciB0b3JyZXMiLCJzeXN0ZW0iOiJQbGF0YWZvcm1hcyBoZXhhZ29uYWxlcyBkZSBtZGYgZGUgM21tLCBwaWxhcmVzIGRlIG1hZGVyYSB5IGJhc2VzIGNpcmN1bGFyZXMgZGUgbWRmIiwibm90ZSI6IiJ9LHsic3RlcF90aXRsZSI6IiIsInVzZXIiOiJwaXgtc21pbGluZyBcIkJpZW4sIGxhIGVzdHJ1Y3R1cmEgeWEgZXN0w6EgbGlzdGEgYXPDrSBxdWUgYWhvcmEgaGF5IHF1ZSBwb25lciBsYXMgcGllemFzIGRlIGNvbG9yZXMgc29icmUgbGFzIHBsYXRhZm9ybWFzXCIiLCJkaWFsb2d1ZSI6InBpeC1oYW5kIFBvbmVyIHBpZXphcyBkZSBjb2xvcmVzIHNvYnJlIGxhcyBwbGF0YWZvcm1hcywgY29sb2NhbmRvIGxhcyBlc3BlY2lhbGVzIG3DoXMgY2VyY2EgZGUgbGFzIHpvbmFzIGNlbnRyYWxlcyIsInN5c3RlbSI6IkVzdHJ1Y3R1cmFzLCBwaWV6YXMgaW1wcmVzYXMgZW4gM0QsIHBpbnRhZGFzIGRlIGNvbG9yZXMgeSBjb24gbGlnZXJvIHBlc28iLCJub3RlIjoiIn0seyJzdGVwX3RpdGxlIjoiIiwidXNlciI6InBpeC1zbWlsaW5nIFwiTGlzdG8sIHlhIGVzdMOhIHRvZG8gY29sb2NhZG8sIGFob3JhIHRvbWFyZW1vcyBjYWRhIHVubyB1bmEgcGlleml0YSBkZSBjb2xvciBkZSBsYSBib2xzYSBkZSB0ZWxhIHBhcmEgc2FiZXIgcXVlIGNvbG9yZXMgc29tb3NcIiIsImRpYWxvZ3VlIjoicGl4LWhhbmQgTWV0ZXIgbGEgbWFubyBkZW50cm8gZGUgYm9sc2l0YSBkZSB0ZWxhIHkgdG9tYXIgdW5hIHBpZXphIGN1YWRyYWRhIGRlIGNvbG9yIHBhcmEgZGVmaW5pciBlbCBjb2xvciBkZSBjYWRhIGp1Z2Fkb3IiLCJzeXN0ZW0iOiJCb2xzYSBkZSB0ZWxhIHF1ZSBjb250aWVuZSA0IHBpZXphcyBjdWFkcmFkYXMgZGUgbWRmIGRlIDNtbSwgcGludGFkYXMgY29uIGxvcyBtaXNtb3MgY29sb3JlcyBxdWUgbGFzIHBpZXphcyAzRC4iLCJub3RlIjoiIn0seyJzdGVwX3RpdGxlIjoiSnVlZ28iLCJ1c2VyIjoicGl4LWludHJpZ3VlZCBcIllvIHNveSBlbCBjb2xvciBjZWxlc3RlLiBBaG9yYSB0aXJhcsOpIGxhIHJ1bGV0YSBwYXJhIHNhYmVyIGNvbiBxdcOpIG1hbm8geSBjYcOxYSBqdWdhclwiIiwiZGlhbG9ndWUiOiJwaXgta2lvc2sgSGFjZXIgZ2lyYXIgbGEgcnVsZXRhIGRlIGNvbmRpY2lvbmVzIHkgdG9tYXIgbGEgY2HDsWEgaW5kaWNhZGEiLCJzeXN0ZW0iOiJSdWxldGEgY2lyY3VsYXIgZGUgbWRmIGRlIDNtbSwgY29uIGRvcyByb2RhbWllbnRvcyB5IGRvcyBmbGVjaGFzLMKgY29uIHBhcGVsIHZpbmlsbyBwZWdhZG8gcG9yIGVuY2ltYSBxdWUgdGllbmUgcGljdG9ncmFtYXMiLCJub3RlIjoiIn0seyJzdGVwX3RpdGxlIjoiIiwidXNlciI6InBpeC1pbnRyaWd1ZWQgXCJEZWJvIGp1Z2FyIGNvbiBsYSBtYW5vIGl6cXVpZXJkYSB5IGNvbiBsYSBjYcOxYSBsYXJnYSB5IHBlc2FkYVwiXCJJbnRlbnRhcsOpIGJvdGFyIGVzdGEgcGllemEgcXVlIGVzdMOhIGFsIGJvcmRlXCIiLCJkaWFsb2d1ZSI6InBpeC1ib2R5IFRvbWFyIGNhw7FhLCBlbmdhbmNoYXIgYm9sYSBwZXNhZGEgYSBsYSBwdW50YSB5IGV4dGVuZGVyLiBNZWRpciBkaXN0YW5jaWEgeSBtb3ZpbWllbnRvLCBib3RhciB1bmEgcGllemEgZnVlcmEgZGUgbGEgcGxhdGFmb3JtYSIsInN5c3RlbSI6IkNhw7FhIGRlIG1hZGVyYSBleHRlbmRpYmxlLCBib2xhIGRlIHBsw6FzdGljbyByZWxsZW5hIHBhcmEgYXBsaWNhciBwZXNvLCBwaWV6YXMgM0QgZGUgY29sb3JlcyIsIm5vdGUiOiIifSx7InN0ZXBfdGl0bGUiOiIiLCJ1c2VyIjoicGl4LWhhcHB5IFwiwqFCaWVuLCBsYSBib3TDqSEsIGFob3JhIGRlamFyw6kgbGEgY2HDsWEgZW4gbGEgbWVzYSB5IHF1ZSBsZSB0b3F1ZSBzdSB0dXJubyBhbCBzaWd1aWVudGUganVnYWRvclwiIiwiZGlhbG9ndWUiOiJwaXgtaGFuZCBSZWNvZ2VyIHBpZXphIGNhw61kYSwgZGVqYXIgY2HDsWEgZW4gbWVzYS7CoE90cm8ganVnYWRvciB0aXJhIGxhIHJ1bGV0YSB5IHJlcGl0ZSBlbCBwcm9jZXNvIiwic3lzdGVtIjoiUGllemFzIDNEIGRlIGNvbG9yZXMsIGNhw7FhIGRlIG1hZGVyYSBleHRlbmRpYmxlLCBwbGF0YWZvcm1hcywgcnVsZXRhIiwibm90ZSI6IiJ9LHsic3RlcF90aXRsZSI6IiIsInVzZXIiOiJwaXgtc3VycHJpc2VkIFwiVXksIGZ1ZSBkaWZpY2lsIGVsIG1vdmltaWVudG8gcXVlIGhpem8gbWkgY29tcGHDsWVybywgcGVybyBsb2dyw7MgYm90YXIgdHJlcyBwaWV6YXNcIiIsImRpYWxvZ3VlIjoicGl4LXZpZXcgVmVyIGp1Z2FkYSBkZSBjb21wYcOxZXJvIG1pZW50cmFzIGVzcGVyYSBzdSB0dXJubyIsInN5c3RlbSI6IlBpZXphcyAzRCBkZSBjb2xvcmVzLCBjYcOxYSBkZSBtYWRlcmEgZXh0ZW5kaWJsZSwgcGxhdGFmb3JtYXMsIHJ1bGV0YSIsIm5vdGUiOiIifSx7InN0ZXBfdGl0bGUiOiJGaW4gZGVsIGp1ZWdvIiwidXNlciI6InBpeC1mYWNlIFwiTGlzdG8gbWUgdG9jYSBhIG1pIGRlbnVldm8sIHRpcmFyw6kgbGEgcnVsZXRhIGUgaW50ZW50YXLDqSBib3RhciBlc2EgcGllemEgcXVlIGVzdMOhIGNlcmNhIGRlIHVuIHBpbGFyXCIiLCJkaWFsb2d1ZSI6InBpeC1ib2R5IEdpcmFyIHJ1bGV0YSwgdG9tYXIgbGEgY2HDsWEgY29uIGxhIG1hbm8gaW5kaWNhZGEgeSBoYWNlciBtb3ZpbWllbnRvIHBhcmEgaW50ZW50YXIgZGVycmliYXIgcGllemEiLCJzeXN0ZW0iOiJQaWV6YXMgM0QgZGUgY29sb3JlcywgY2HDsWEgZGUgbWFkZXJhIGV4dGVuZGlibGUsIHBsYXRhZm9ybWFzLCBydWxldGEiLCJub3RlIjoiIn0seyJzdGVwX3RpdGxlIjoiIiwidXNlciI6InBpeC1zdXJwcmlzZWQgXCLCoU5vbywgYm90w6kgbGEgdG9ycmUgc2luIHF1ZXJlciEiLCJkaWFsb2d1ZSI6InBpeC11bmxpbmsgUGFzYXIgYSBsbGV2YXIgZWwgcGlsYXIgY29uIGxhIGNhw7FhIHkgY29uIGVsbG8gcHJvdm9jYXIgY2HDrWRhIGRlIHVuYSB0b3JyZSB5IGRlcnJ1bWJlIHRvdGFsIGRlIGxhIGVzdHJ1Y3R1cmEiLCJzeXN0ZW0iOiJDYcOxYSBkZSBtYWRlcmEgY29uIGJvbGEsIHBsYXRhZm9ybWFzLCBwaWxhcmVzLCBwaWV6YXMsIGVzdHJ1Y3R1cmEiLCJub3RlIjoiIn0seyJzdGVwX3RpdGxlIjoiIiwidXNlciI6InBpeC1zYWQgXCJCb3TDqSBsYSB0b3JyZSB5IHBlcmTDrSB0b2RvcyBtaXMgcHVudG9zLCBlc3RhYmEgbXV5IGRpZmljaWwgZXNlIHRpcm8sIHRlbmRyw6kgcXVlIHRlbmVyIG3DoXMgY3VpZGFkbyBwYXJhIGxhIHByw7N4aW1hXCIiLCJkaWFsb2d1ZSI6IiIsInN5c3RlbSI6IlBsYXRhZm9ybWFzLCBwaWxhcmVzIHkgcGllemFzIGJvdGFkYXMgc29icmUgbGEgbWVzYSIsIm5vdGUiOiIifSx7InN0ZXBfdGl0bGUiOiIiLCJ1c2VyIjoicGl4LXNtaWxpbmcgXCJCdWVubywgbG9zIGRlbcOhcyBqdWdhZG9yZXMgZGViZW4gY29udGFyIHN1cyBwdW50b3MgcGFyYSB2ZXIgcXVpZW4gZ2Fuw7MsIGx1ZWdvIGFybWFyZW1vcyBsYSBlc3RydWN0dXJhIG90cmEgdmV6IHBhcmEgdm9sdmVyIGEganVnYXJcIiIsImRpYWxvZ3VlIjoiVG9tYXIgcGxhdGFmb3JtYXMgcGFyYSBvcmRlbmFybGFzIG1pZW50cmFzIGxvcyBkZW3DoXMganVnYWRvcmVzIGN1ZW50YW4gc3VzIHB1bnRvcyBwYXJhIHNhYmVyIHF1aWVuIGVzIGVsIGdhbmFkb3IgZmluYWwiLCJzeXN0ZW0iOiJQbGF0YWZvcm1hcywgcGlsYXJlcyBkZSBtYWRlcmEsIGJhc2VzLCBwaWV6YXMgM0QiLCJub3RlIjoiIn1dXX0" width="100%" height="914" frameborder="0" loading="lazy"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="new-section scrollable-screen" id="fundamento" style="padding: 40px 20px 100px 20px;">
+        <div class="ref-container full-width-container" style="max-width: 1200px;">
+            <div class="ref-title scroll-anim">
+                <span>Fundamento</span>
+            </div>
+            
+            <article class="fundamento-article">
+                <h2 class="fundamento-section-title scroll-anim">Introducción</h2>
+                <p class="scroll-anim">El paso de un juego de mesa físico a una experiencia web interactiva no consiste en calcar su estética en una pantalla, sino en extraer su lógica motriz. Este proyecto toma como referencia Zona Inestable, un juego de mesa fundamentado en la vulnerabilidad de la materia. Sin embargo, en lugar de generar una réplica digital, se aísla el concepto de "gravedad" como variable central de diseño para construir una experiencia completamente nueva. El objetivo es replicar la tensión física y el colapso mediante herramientas de programación web, ademas de presentar lo que fue el juego de mesa en un formato Landing mas tradicional.</p>
+
+                <h2 class="fundamento-section-title scroll-anim" style="margin-top: 50px;">Del concepto "Gravedad" al fundamento</h2>
+                <p class="scroll-anim">En el juego análogo, la gravedad es una fuerza ineludible que obliga a los participantes a entender el centro de masa de la estructura, calculando la inercia del péndulo y el peso de los componentes para evitar un colapso. Para sistematizar esta dinámica, se elaboró la Partitura de Interacción (PIX) del juego físico. Este documento desglosa el diálogo táctil y cognitivo: el montaje modular, la alteración del equilibrio y las limitaciones corporales impuestas por la ruleta.</p>
+                
+                <img src="fotos/esquema_gravedad.png" alt="Esquema de Gravedad" class="fundamento-img-borderless gravedad-img scroll-anim">
+
+                <h2 class="fundamento-section-title scroll-anim" style="margin-top: 60px;">Desarrollo iterativo de prototipo a código</h2>
+                <div class="fundamento-grid-4 scroll-anim">
+                    <div class="fundamento-step">
+                        <h4>Wireframe inicial</h4>
+                        <p>Se establece la arquitectura de la información y la distribución espacial de los componentes. Este esquema de baja fidelidad define la jerarquía de los contenidos de la página, priorizando la usabilidad y el flujo de navegación del usuario antes de aplicar cualquier decisión gráfica o estética.</p>
+                    </div>
+                    <div class="fundamento-step">
+                        <h4>Maqueta en Figma</h4>
+                        <p>Se diseña la interfaz de usuario (UI) aplicando la identidad visual del proyecto. Se establecen paletas de color, tipografías, proporciones y el comportamiento responsivo, creando un prototipo estático de alta fidelidad que sirve como mapa exacto y regla de medida para el desarrollo técnico.</p>
+                    </div>
+                    <div class="fundamento-step">
+                        <h4>Prompt y referencias visuales</h4>
+                        <p>El diseño visual se traduce a instrucciones lógicas y precisas (prompts) para modelos de lenguaje artificial. Se definen requerimientos técnicos, restricciones de diseño y lógicas de interacción, utilizando la maqueta de Figma como referencia estricta para guiar la comprensión de la IA.</p>
+                    </div>
+                    <div class="fundamento-step">
+                        <h4>Input y generación de código</h4>
+                        <p>A partir de las instrucciones ingresadas, el modelo genera el código estructural (HTML), las hojas de estilo (CSS) y la lógica funcional (JavaScript). En esta etapa se materializan mecánicas complejas, como el cálculo de variables físicas en Matter.js y el renderizado nativo en Canvas.</p>
+                    </div>
+                </div>
+                
+                <img src="fotos/proceso_iterativo.png" alt="Proceso iterativo" class="fundamento-img-borderless scroll-anim">
+
+                <div class="fundamento-grid-2 scroll-anim">
+                    <div class="fundamento-step">
+                        <h4>Etapa de testeo</h4>
+                        <p>El código generado se ejecuta en el navegador para evaluar su rendimiento e iterar sobre los errores. Se realiza un proceso continuo de depuración (debugging), ajustando variables de colisión, inercia, animaciones responsivas y eventos de audio hasta lograr la estabilidad total del sistema.</p>
+                    </div>
+                    <div class="fundamento-step">
+                        <h4>Publicación en Github</h4>
+                        <p>Una vez validada la experiencia técnica y visual, el código fuente se consolida y se sube a un sistema de control de versiones. Se utiliza la herramienta GitHub Pages para el despliegue final, asegurando el alojamiento del sitio y permitiendo el acceso público a la interfaz digital.</p>
+                    </div>
+                </div>
+
+                <h2 class="fundamento-section-title scroll-anim" style="margin-top: 60px;">Desarrollo de la Landing Page</h2>
+                <p class="scroll-anim">El desarrollo de la Landing Page se plantea como un espacio de transición narrativa que conecta la materialidad del juego físico con la abstracción del simulador digital. Su función principal es predisponer al usuario, introduciendo el concepto de inestabilidad a través del propio comportamiento de la interfaz. Para ello, se estructuró un entorno programado desde cero en HTML5, CSS3 y JavaScript puro, prescindiendo deliberadamente de librerías externas para garantizar una carga ligera y un control absoluto sobre el rendimiento. La arquitectura de la página aprovecha el evento de scroll y los observadores de intersección.</p>
+
+                <h2 class="fundamento-section-title scroll-anim" style="margin-top: 50px;">Desarrollo de la Experiencia Interactiva</h2>
+                <h4 class="scroll-anim" style="color: #000; margin-bottom: 25px; font-family: 'Segoe UI', sans-serif;">¿Por qué se tomaron estas decisiones técnicas?</h4>
+                <div class="fundamento-grid-3 scroll-anim">
+                    <div class="fundamento-step">
+                        <p><strong>Físicas y Colisiones:</strong> Se integró el motor de físicas <strong>Matter.js</strong>. Mediante la configuración de variables como la resistencia al movimiento (frictionAir) y la capacidad de rebote (restitution), se logró dotar a una figura geométrica bidimensional de un "peso" perceptible.</p>
+                    </div>
+                    <div class="fundamento-step">
+                        <p><strong>Renderizado matemático:</strong> Se utilizó la <strong>Canvas API de HTML5</strong> para reemplazar las vistas estáticas por gráficos generados en tiempo real. Esta API calcula sombras radiales dinámicas en base a la distancia del jugador y dibuja vectores de fractura estructural sobre los elementos de cristal dependiendo de la fuerza del impacto.</p>
+                    </div>
+                    <div class="fundamento-step">
+                        <p><strong>Diseño Sonoro Reactivo:</strong> A través de la <strong>Web Audio API</strong>, los eventos sonoros (fricción, derribo) no son simples reproducciones en bucle, sino que el volumen y el tono (pitch) de los audios de rodamiento están directamente sincronizados con la magnitud de la aceleración del avatar, ofreciendo retroalimentación sensorial inmediata.</p>
+                    </div>
+                </div>
+
+                <img src="fotos/comparativa_interfaces.png" alt="Comparativa de interfaces" class="fundamento-img-borderless gravedad-img scroll-anim">
+
+                <h2 class="fundamento-section-title scroll-anim" style="margin-top: 60px;">Estructura e Interacciones</h2>
+                
+                <div class="horizontal-flow-wrapper scroll-anim">
+                    <div class="flow-row">
+                        <div class="flow-track-label">Landing</div>
+                        <div class="horizontal-flow-track">
+                            <div class="flow-card">
+                                <h4>Pantallas Superpuestas<br><small>(Overlays de estado)</small></h4>
+                                <ul>
+                                    <li><strong>Pantalla de Advertencia:</strong> Control de audio y botón de inicio.</li>
+                                    <li><strong>Pantalla de Transición:</strong> Carga hacia el simulador interactivo.</li>
+                                </ul>
+                            </div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-card">
+                                <h4>Navegación Global<br><small>(Header)</small></h4>
+                                <ul>
+                                    <li><strong>Identidad Visual:</strong> Logotipo y título ("Zona Inestable").</li>
+                                    <li><strong>Menú de Anclas:</strong> Navegación rápida por secciones.</li>
+                                </ul>
+                            </div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-card">
+                                <h4>Pantalla Inicial<br><small>(Home)</small></h4>
+                                <ul>
+                                    <li><strong>Título Interactivo:</strong> Tipografía reactiva al cursor.</li>
+                                    <li><strong>Microinteracción:</strong> Demolición detonada por clic.</li>
+                                </ul>
+                            </div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-card">
+                                <h4>Contenido Estructurado<br><small>(Secciones de Scroll)</small></h4>
+                                <ul>
+                                    <li><strong>Referente:</strong> Introducción al juego de mesa físico.</li>
+                                    <li><strong>Reglas & Mecánicas:</strong> Tarjetas con video integrado.</li>
+                                    <li><strong>Componentes:</strong> Muestrario de piezas en 3D.</li>
+                                </ul>
+                            </div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-card">
+                                <h4>Cierre de Interfaz<br><small>(Footer)</small></h4>
+                                <ul>
+                                    <li>Créditos y enlaces institucionales e[ad] PUCV.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-row" style="margin-top: 30px;">
+                        <div class="flow-track-label" style="color: #A6DDE5; border-color: #A6DDE5;">Interfaz Digital</div>
+                        <div class="horizontal-flow-track">
+                            <div class="flow-card digital-card">
+                                <h4 style="color:#2c7a8b;">Interfaz de Usuario<br><small style="color:#9c3d42;">(HUD - Head-Up Display)</small></h4>
+                                <ul>
+                                    <li><strong>Controles:</strong> Retorno al Landing y botón de reinicio.</li>
+                                    <li><strong>Menú de Estados:</strong> Modificadores de gravedad.</li>
+                                    <li><strong>Datos:</strong> "Puntos" e indicador de "Objetivo".</li>
+                                </ul>
+                            </div>
+                            <div class="flow-arrow" style="color: #F5BEBF;">→</div>
+                            <div class="flow-card digital-card">
+                                <h4 style="color:#2c7a8b;">Pantallas de Control<br><small style="color:#9c3d42;">(Overlays)</small></h4>
+                                <ul>
+                                    <li><strong>Ruleta:</strong> Sorteo de condición de victoria.</li>
+                                    <li><strong>Fin de Partida:</strong> Panel de decisiones y modo libre.</li>
+                                </ul>
+                            </div>
+                            <div class="flow-arrow" style="color: #F5BEBF;">→</div>
+                            <div class="flow-card digital-card">
+                                <h4 style="color:#2c7a8b;">Simulación Física<br><small style="color:#9c3d42;">(Canvas 2D / Matter.js)</small></h4>
+                                <ul>
+                                    <li><strong>Avatar:</strong> Esfera controlable mediante aceleración.</li>
+                                    <li><strong>Topografía:</strong> Cuadrículas y zonas de vacío.</li>
+                                    <li><strong>Reacción:</strong> Estratos de cristal con daño estructural.</li>
+                                    <li><strong>Audio:</strong> Eventos sonoros variables (Web Audio API).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pix-container fundamento-pix scroll-anim" style="margin-top: 60px;">
+                    <p class="pix-description" style="max-width: 800px; text-align: center; margin-bottom: 30px; color: #000000; line-height: 1.6; font-size: 1.1rem; margin-top: 0;">
+                        Esta segunda Partitura de Interacción (PIX) detalla específicamente el flujo de la experiencia digital. Registra la secuencia de acciones y respuestas del sistema en la interfaz digital 'Gravitud', documentando cómo se aplican las físicas de Matter.js, la gestión del Web Audio API y las mecánicas de puntuación en el entorno virtual.
+                    </p>
+                    <button class="btn-ghost-style pix-trigger-btn" id="btnPixFundamento">Desplegar PIX</button>
+                    <div class="pix-matrix-wrapper" id="pixMatrixFundamento">
+                        <div class="pix-highlight-box">
+                            <div class="pix-raw-code">
+                                <iframe class="pix-viewer" src="https://eadpucv.github.io/pix/#!/import/eyJ0aXRsZSI6IlBhcnRpZGEgZGUgbGEgSW50ZXJmYXogZGlnaXRhbCBkZSBncmF2ZWRhZCIsImxheW91dCI6InBpeCIsImRlc2NyaXB0aW9uIjoiU2UgY2VudHJhIGVuIHVuYSBwYXJ0aWRhIGRlbnRybyBkZSBsYSBpbnRlcmZheiwgbW9zdHJhbmRvIGNvbW8gZXMganVnYXIgZWwgbW9kbyBub3JtYWwgeSBxdWUgc2UgcHVlZGUgZW5jb250cmFyIGVuIGVzdGEgYWRlbcOhcyBkZSBleHBsaWNhciBxdWUgY29zYXMgc3VjZWRlbiBpbnRlcm5hbWVudGUgZW4gZWwgc2lzdGVtYSBwYXJhIHF1ZSBlc3RhIHNlIHB1ZWRhIHZpc3VhbGl6YXIuIiwic2NvcmVzIjpbW3sic3RlcF90aXRsZSI6IkluaWNpbyIsInVzZXIiOiIiLCJkaWFsb2d1ZSI6InBpeC1hdWRpbyBTZSBjYXJnYSBsb3Mgb2JqZXRvcyB5IHNlIGVzY3VjaGFuIGxvcyBlZmVjdG9zIGRlIHNvbmlkbyIsInN5c3RlbSI6InBpeC1wcm9jZXNzIFJlbmRlcml6YSBjdWFkcsOtY3VsYSBlbiB2aXN0YSBjZW5pdGFsIHkgcmVwcm9kdWNlIGVsIGF1ZGlvIGFtYmllbnRlwqAgZXN0YWJsZWNpZW5kbyBsYSBhdG3Ds3NmZXJhIGRlIHRlbnNpw7NuLiIsIm5vdGUiOiJNZWRpYW50ZSBzaW11bGFjacOzbiBlbiB2aXN0YSAyLjUgc2UgY3JlYSBlbCBtYXBhIHkgc3VzIGRpdmVyc2FzIGVzdHJ1Y3R1cmFzLCBnZW5lcmFuZG8gdW4gYW1iaWVudGUgcXVlIHNpbXVsYSBlbCAzRC4ifSx7InN0ZXBfdGl0bGUiOiIiLCJ1c2VyIjoicGl4LWludHJpZ3VlZCBcIkVsIGVudG9ybm8gc2UgdmUgZnLDoWdpbCB5IG9zY3Vyby4gTm8gcHVlZG8gbW92ZXJtZSBicnVzY2FtZW50ZS5cIiIsImRpYWxvZ3VlIjoicGl4LWV4cGFuZCBQb25lIGxhcyBtYW5vcyBzb2JyZSBlbCB0ZWNsYWRvIGFzdW1pZW5kbyB1bmEgcG9zdHVyYSBkZSBhbGVydGEuIiwic3lzdGVtIjoiIiwibm90ZSI6IiJ9LHsic3RlcF90aXRsZSI6IiIsInVzZXIiOiIiLCJkaWFsb2d1ZSI6InBpeC1wYXVzZSBPYnNlcnZhIHBhc2l2YW1lbnRlIGxhIHBhbnRhbGxhIGEgbGEgZXNwZXJhIGRlIGxhIGluc3RydWNjacOzbi4iLCJzeXN0ZW0iOiJwaXgtZG93bmxvYWQgRGVzcGxpZWdhIGVsIG92ZXJsYXkgZGUgbGEgcnVsZXRhLCBjYWxjdWxhIGFsZWF0b3JpYW1lbnRlIHkgYXNpZ25hIHVuIGNvbG9yIG9iamV0aXZvIiwibm90ZSI6Iihlai4gXCJDaWFuXCIpLCBkZWZpbmllbmRvIGxhIHJlZ2xhIGRlIHZpY3RvcmlhIHBhcmEgZXNhIHJvbmRhLiJ9LHsic3RlcF90aXRsZSI6IkV4cGxvcmFyIiwidXNlciI6InBpeC10aGluayBEZWJvIG1lbW9yaXphciBxdcOpIGNvbG9yIG1lIGRhIHB1bnRvcyB5IGN1w6FsIG1lIGNhc3RpZ2EuIiwiZGlhbG9ndWUiOiJwaXgtbW92ZSBDb21pZW56YSBhIGRlc3BsYXphcnNlIHBvciBlbCBtYXBhLiIsInN5c3RlbSI6InBpeC1wcm9jZXNzIE1hdHRlci5qcyBhcGxpY2EgdmVjdG9yZXMgZGUgZnVlcnphIGFsIGF2YXRhci4gRWwgc2lzdGVtYSBkZSBXZWIgQXVkaW8gQVBJIGF1bWVudGEgZWwgdm9sdW1lbiB5IGVsIHRvbm8gKHBpdGNoKSBkZSByb2RhbWllbnRvIGRlIG1hbmVyYSBwcm9wb3JjaW9uYWwuIiwibm90ZSI6IiJ9LHsic3RlcF90aXRsZSI6IiIsInVzZXIiOiJwaXgtaW50cmlndWVkIExhIGVzZmVyYSBubyBmcmVuYSBkZSBpbm1lZGlhdG8gY3VhbmRvIHN1ZWx0byBsYSB0ZWNsYS4gdGVuZ28gcXVlIGNhbGN1bGFyIGxhIGRpc3RhbmNpYSBkZSBmcmVuYWRvLiIsImRpYWxvZ3VlIjoicGl4LWNvbGxhcHNlIEZhbGxhIGVuIGVsIGPDoWxjdWxvIGRlIGluZXJjaWEgeSBjaG9jYSBhIGFsdGEgdmVsb2NpZGFkIGNvbnRyYSB1biBlc3RyYXRvIGRlIGNyaXN0YWwgZGVsIHRhYmxlcm8uIiwic3lzdGVtIjoicGl4LXVwZGF0ZSBEZXN0cnV5ZSBlbCBjdWFkcmFkbyBnZW5lcmFuZG8gcGFydMOtY3VsYXMgZsOtc2ljYXMgeSBlbWl0aWVuZG8gZWwgZWZlY3RvIGRlIHNvbmlkbyBkZSBxdWllYnJlLiIsIm5vdGUiOiIifSx7InN0ZXBfdGl0bGUiOiIiLCJ1c2VyIjoicGl4LXN1cnByaXNlZCBHb2xwZcOpIGVsIHBpbGFyIGVxdWl2b2NhZG8uIEFob3JhIG1pIGF2YXRhciBlcyBlbm9ybWUsIG1lIG11ZXZvIG11eSBsZW50by4iLCJkaWFsb2d1ZSI6InBpeC1kb3VibGV0YXAgSW50ZW50YSByZWFqdXN0YXIgc3UgbW90cmljaWRhZCBlbiBlbCB0ZWNsYWRvIHBhcmEgY29tcGVuc2FyIGxhIG51ZXZhIGxlbnRpdHVkLiIsInN5c3RlbSI6InBpeC1hcGkgRWwgY8OzZGlnbyBhbHRlcmEgcGFyYW3DqXRyaWNhbWVudGUgbGEgZGVuc2lkYWQgeSBlbCByYWRpbyBkZWwgYXZhdGFyIiwibm90ZSI6Ik5vIHNvbG8gc2UgbW9kaWZpY2EgZXNvLCB0YW1iacOpbmVsIGF1ZGlvIHNpbXVsYW5kbyBlbCBwZXNvIGEgdHJhdsOpcyBkZSBlc3RlIHRhbWJpw6luLiJ9LHsic3RlcF90aXRsZSI6IkZpbmFsIiwidXNlciI6InBpeC1oYXBweSBDb25zZWd1w60gbG9zIHB1bnRvcyBuZWNlc2FyaW9zIHF1ZSBtZSBwZWRpYSBsYSBtZXRhLiIsImRpYWxvZ3VlIjoicGl4LWV4cGFuZCBOYXZlZ2EgZW4gYnVzY2EgZGUgZXN0YS4iLCJzeXN0ZW0iOiJwaXgtcHJvY2VzcyBBbCBjb25zZWd1aXJsbyBzZSBsaWJlcmEgbGEgbWV0YSB5IHNlIGlsdW1pbmEiLCJub3RlIjoiIn0seyJzdGVwX3RpdGxlIjoiIiwidXNlciI6InBpeC1zdXJwcmlzZWQgRGVibyBuYXZlZ2FyIGNvbiBtdWNobyBjdWlkYWRvIGhhY2lhIGxhIHpvbmEgZGUgdmFjw61vIHBhcmEgdGVybWluYXIgbGEgcm9uZGEuIiwiZGlhbG9ndWUiOiJwaXgtYWxlcnQgTGEgbWV0YSBicmlsbGEgZGUgbXVjaG9zIGNvbG9yZXMgcGFyYSBkZXN0YWNhciBlbiBlbCBmb25kby4iLCJzeXN0ZW0iOiIiLCJub3RlIjoiIn0seyJzdGVwX3RpdGxlIjoiIiwidXNlciI6InBpeC1oYXBweSBFcyBob3JhIGRlIGxhbnphcnNlLCBmdWUgbXV5IGRpdmVydGlkbyEiLCJkaWFsb2d1ZSI6InBpeC1kb3duIF5TZSBsYW56YSBwb3IgZWwgYWd1amVybyBvIG1ldGEiLCJzeXN0ZW0iOiJwaXgtZG93bmxvYWQgRGV0ZWN0YSBsYSBzdXBlcnBvc2ljacOzbiBkZSBjb29yZGVuYWRhcy4sIG9zY3VyZWNlIGxhIHBhbnRhbGxhIHkgZGVzcGxpZWdhIGVsIG1lbsO6IGRlIGZpbiBkZSBwYXJ0aWRhLiIsIm5vdGUiOiJEZXNhY3RpdmEgbG9zIGNvbnRyb2xlcyBkZWwganVnYWRvciwgYW5pbWEgbGEgcmVkdWNjacOzbiBkZWwgcmFkaW8gZGVsIGF2YXRhciBzaW11bGFuZG8gdW5hIGNhw61kYSBsaWJyZSBlbiBlbCBlamUgWiBwYXJhIGNyZWFyIGVsIGVmZWN0by4ifSx7InN0ZXBfdGl0bGUiOiIiLCJ1c2VyIjoiIiwiZGlhbG9ndWUiOiJwaXgtaW5wdXQgU2UgZGVzcGxpZ2EgbGEgcGFudGFsbGEgZGUgZmluYWwgcGVybWl0aWVuZG8gZWxlZ2lyIHNpIHNlZ3VpciBqdWdhbmRvIGVudHJhciBhbCBtb2RvIGxpYnJlIG8gdm9sdmVyIGFsIGxhbmRpbmciLCJzeXN0ZW0iOiJwaXgtcHJvY2VzcyBwYXVzYSBlbiBlbCBqdWVnbyB5IGRlc3BsaWVndWUgZGUgdmVudGFuYSBmaW5hbC4iLCJub3RlIjoiIn1dXX0" width="100%" height="898" frameborder="0" loading="lazy"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="new-section scrollable-screen" id="referencia" style="padding-bottom: 0;">
+        <div class="ref-container" id="target-referencias">
+            <div class="ref-title scroll-anim">
+                <span>Referencias</span>
+            </div>
+        </div>
+        <div class="qr-showcase scroll-anim">
+            <div class="qr-row">
+                <a href="https://wiki.ead.pucv.cl/Zona_inestable" target="_blank" class="qr-box-mockup">
+                    <img src="fotos/QR Juego.png" alt="QR Juego">
+                </a>
+                <div class="qr-text" style="align-items: flex-start; text-align: left;">
+                    <p>Explora el origen de Zona Inestable, el juego de mesa que inspiró esta experiencia, y descubre las mecánicas que definen su gravedad.</p>
+                    <span class="scan-text">¡ESCANEA AQUÍ!</span>
+                </div>
+            </div>
+            <div class="qr-row">
+                <div class="qr-text" style="align-items: flex-end; text-align: right;">
+                    <p>Sumérgete en el desarrollo del sitio: conoce el proceso creativo, técnico y experimental detrás de esta pieza interactiva.</p>
+                    <span class="scan-text">¡ESCANEA AQUÍ!</span>
+                </div>
+                <a href="https://wiki.ead.pucv.cl/U3_Taller_IxD_-_Pedro_Beltr%C3%A1n" target="_blank" class="qr-box-mockup">
+                    <img src="fotos/QR Web.png" alt="QR Web">
+                </a>
+            </div>
+        </div>
+
+        <div class="ref-container" style="padding-top: 40px; margin-bottom: 60px;">
+            <div class="ref-block scroll-anim">
+                <h2>Herramientas usadas</h2>
+                <div class="tools-image-grid">
+                    <div class="tool-item-container">
+                        <div class="tool-img-wrapper"><img src="fotos/FIGMA.png" alt="Figma"></div>
+                        <span class="tool-label">Figma</span>
+                    </div>
+                    <div class="tool-item-container">
+                        <div class="tool-img-wrapper"><img src="fotos/VISUAL.png" alt="VS Code"></div>
+                        <span class="tool-label">VS Code</span>
+                    </div>
+                    <div class="tool-item-container">
+                        <div class="tool-img-wrapper"><img src="fotos/CASIOPEA.png" alt="Wiki Casiopea"></div>
+                        <span class="tool-label">Wiki Casiopea</span>
+                    </div>
+                    <div class="tool-item-container">
+                        <div class="tool-img-wrapper"><img src="fotos/GEMINI.png" alt="Gemini"></div>
+                        <span class="tool-label">Gemini</span>
+                    </div>
+                    <div class="tool-item-container">
+                        <div class="tool-img-wrapper"><img src="fotos/GITHUB.png" alt="Github"></div>
+                        <span class="tool-label">GitHub</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="new-section scrollable-screen pre-footer-cta" id="cta-experiencia">
+        <div class="falling-shapes-container"></div>
+        <div class="ref-container full-width-container" style="position: relative; z-index: 2; max-width: 800px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <h2 class="cta-title scroll-anim">¿Listo para adentrarte a la experiencia?</h2>
+            <button class="btn-ghost-style cta-experiencia-btn scroll-anim" id="btnIrExperiencia">¡Vivir la experiencia!</button>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Información del proyecto</h4>
+                <p>Landing y experimentación digital de Zona Inestable, diseñado en Visual Studio Code y versionado en GitHub.<br><br>Finalizada el 30 de junio de 2026.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Estudiante</h4>
+                <p><a href="https://wiki.ead.pucv.cl/Pedro_Beltr%C3%A1n" target="_blank" class="footer-link">Pedro Pablo Beltrán Silva</a></p>
+                
+                <h4 style="margin-top: 30px;">Docentes</h4>
+                <p>
+                    <a href="https://wiki.ead.pucv.cl/Javiera_Ruiz" target="_blank" class="footer-link">Javiera Ruiz</a><br>
+                    <a href="https://wiki.ead.pucv.cl/Katherine_Exss" target="_blank" class="footer-link">Katherine Exss</a>
+                </p>
+            </div>
+            <div class="footer-col">
+                <h4>Taller</h4>
+                <p><a href="https://wiki.ead.pucv.cl/Taller_de_Dise%C3%B1o_de_Interacci%C3%B3n_2026" target="_blank" class="footer-link">Taller de Diseño de Interacción 2026</a><br>e[ad] PUCV</p>
+            </div>
+            <div class="fotos/footer-col footer-logos-col">
+                <img src="fotos/ead.png" alt="Logo eAD">
+                <img src="fotos/pucv.png" alt="Logo PUCV">
+            </div>
+        </div>
+    </footer>
+
+    <div class="image-modal" id="imageModal">
+        <div class="image-modal-content">
+            <span class="close-image-modal" id="closeImageModal">&times;</span>
+            <img src="" alt="Imagen ampliada" id="modalExpandedImg">
+        </div>
+    </div>
+
+   <audio id="bgMusic">
+        <source src="audio/derribo_rojo.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
