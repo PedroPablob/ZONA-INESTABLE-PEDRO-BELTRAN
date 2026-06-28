@@ -8,38 +8,20 @@ window.addEventListener('load', () => {
 
 // --- Audio e Interacción Inicial ---
 const bgMusic = document.getElementById('bgMusic');
-let audioStarted = false;
 
 const btnAceptar = document.getElementById('btnAceptar');
-btnAceptar.addEventListener('click', () => {
-    document.getElementById('introScreen').classList.add('hidden');
-    document.body.classList.add('scroll-allowed');
-    if (!audioStarted && bgMusic) {
-        const toggleSonido = document.getElementById('toggle-sonido');
-        if (toggleSonido && toggleSonido.classList.contains('active')) {
-            bgMusic.play().catch(e => console.log("Audio block"));
-        }
-        audioStarted = true;
-    }
-});
+if (btnAceptar) {
+    btnAceptar.addEventListener('click', () => {
+        document.getElementById('introScreen').classList.add('hidden');
+        document.body.classList.add('scroll-allowed');
+    });
+}
 
 // --- Controles Inferiores (Sonido) ---
 const toggles = document.querySelectorAll('.toggle-wrapper');
 toggles.forEach(t => {
     t.addEventListener('click', () => {
         t.classList.toggle('active');
-        
-        if (t.id === 'toggle-sonido' && bgMusic) {
-            if (t.classList.contains('active')) {
-                const homeSection = document.getElementById('home');
-                const rect = homeSection.getBoundingClientRect();
-                if (rect.top >= -window.innerHeight / 2) {
-                    bgMusic.play().catch(e => console.log("Esperando interacción manual"));
-                }
-            } else {
-                bgMusic.pause();
-            }
-        }
     });
 });
 
@@ -66,92 +48,21 @@ document.querySelectorAll('.back-btn').forEach(btn => {
     });
 });
 
-// --- LÓGICA DEL INDICADOR DE SECCIÓN Y TOOLTIP ---
+// --- LÓGICA DEL BOTÓN FLOTANTE "VOLVER" ---
 const sectionIndicator = document.getElementById('sectionIndicator');
-const indicatorText = document.getElementById('indicatorText');
-const indicatorTooltip = document.getElementById('indicatorTooltip');
-
-let currentSectionName = '';
-let hasSeenTooltip = false; 
-
-sectionIndicator.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    indicatorTooltip.classList.remove('show-tooltip'); 
-});
-
-const sectionObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const sectionId = entry.target.id;
-            let newText = '';
-            
-            if (sectionId === 'intro-juego') newText = 'El Juego';
-            if (sectionId === 'reglas') newText = 'Cómo se juega';
-            if (sectionId === 'mecanicas') newText = 'Mecánicas Físicas';
-            if (sectionId === 'componentes') newText = 'Componentes';
-            if (sectionId === 'galeria') newText = 'Registro físico';
-            if (sectionId === 'pix-section') newText = 'Partitura PIX';
-            if (sectionId === 'fundamento') newText = 'Fundamento';
-            if (sectionId === 'referencia') newText = 'Referencias';
-
-            if (newText !== currentSectionName && newText !== '') {
-                sectionIndicator.classList.add('visible');
-                
-                if (!hasSeenTooltip) {
-                    indicatorTooltip.classList.add('show-tooltip');
-                    hasSeenTooltip = true;
-                    setTimeout(() => {
-                        indicatorTooltip.classList.remove('show-tooltip');
-                    }, 4000);
-                }
-
-                if (indicatorText.textContent === '') {
-                    indicatorText.textContent = newText;
-                } else {
-                    indicatorText.classList.add('animating-out');
-                    setTimeout(() => {
-                        indicatorText.textContent = newText;
-                        indicatorText.classList.remove('animating-out');
-                        indicatorText.classList.add('animating-in');
-                        void indicatorText.offsetWidth; 
-                        indicatorText.classList.remove('animating-in');
-                    }, 300); 
-                }
-                currentSectionName = newText;
-            }
-        }
+if (sectionIndicator) {
+    sectionIndicator.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-}, { 
-    rootMargin: "-20% 0px -75% 0px", 
-    threshold: 0 
-});
 
-document.querySelectorAll('.new-section').forEach(sec => {
-    sectionObserver.observe(sec);
-});
-
-window.addEventListener('scroll', () => {
-    if (window.scrollY < window.innerHeight * 0.5) {
-        sectionIndicator.classList.remove('visible');
-        currentSectionName = '';
-        indicatorTooltip.classList.remove('show-tooltip'); 
-    }
-});
-
-// --- Intersection Observer para Música ---
-const homeAudioObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        const toggleSonido = document.getElementById('toggle-sonido');
-        if (entry.isIntersecting) {
-            if (audioStarted && bgMusic && toggleSonido?.classList.contains('active')) {
-                bgMusic.play();
-            }
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > window.innerHeight * 0.5) {
+            sectionIndicator.classList.add('visible');
         } else {
-            bgMusic?.pause();
+            sectionIndicator.classList.remove('visible');
         }
     });
-}, { threshold: 0.4 });
-homeAudioObserver.observe(document.getElementById('home'));
+}
 
 // --- Tipografía Inestable & Físicas de Demolición ---
 const gravitudTitle = document.getElementById('gravitudTitle');
@@ -168,6 +79,7 @@ if(gravitudTitle) {
 const letterSpans = gravitudTitle?.querySelectorAll('span') || [];
 let clickFase = 0; 
 
+// Microinteracción sutil de letras flotantes (fase de espera)
 setInterval(() => {
     if (clickFase === 0 && letterSpans.length > 0) {
         const validSpans = Array.from(letterSpans).filter(span => span.textContent.trim() !== '');
@@ -180,83 +92,94 @@ setInterval(() => {
     }
 }, 5000);
 
-gravitudTitle?.addEventListener('click', (e) => {
-    if (clickFase === 0) {
-        clickFase = 1;
-        gravitudTitle.style.animation = 'none';
+if (gravitudTitle) {
+    gravitudTitle.addEventListener('click', (e) => {
+        // PRIMER CLIC: Efecto de ola expansiva sin letras atascadas
+        if (clickFase === 0) {
+            clickFase = 1;
+            gravitudTitle.style.animation = 'none';
 
-        // Detectar exactamente qué letra recibió el clic
-        let clickedIndex = Math.floor(letterSpans.length / 2); // Centro por defecto por si le da al espacio
-        if (e.target.tagName.toLowerCase() === 'span') {
-            clickedIndex = parseInt(e.target.getAttribute('data-index'));
-        }
-
-        // Crear la onda expansiva
-        letterSpans.forEach((s) => {
-            if (s.textContent.trim() !== '') {
-                const currentIndex = parseInt(s.getAttribute('data-index'));
-                const distance = Math.abs(currentIndex - clickedIndex);
-                // 40ms de retraso por cada "letra" de distancia desde el clic
-                const delay = distance * 40; 
-                
-                setTimeout(() => { s.classList.add('letter-blackened'); }, delay);
+            let clickedIndex = Math.floor(letterSpans.length / 2); 
+            if (e.target.tagName.toLowerCase() === 'span') {
+                clickedIndex = parseInt(e.target.getAttribute('data-index'));
             }
-        });
 
-    } 
-    else if (clickFase === 1) {
-        clickFase = 2;
-        const ball = document.getElementById('wreckingBall');
-        ball.classList.add('swing-in');
-
-        setTimeout(() => {
-            const reversedLetters = [...letterSpans].reverse();
-
-            reversedLetters.forEach((s, i) => {
+            letterSpans.forEach((s) => {
                 if (s.textContent.trim() !== '') {
-                    const delayExplosion = i * 30; 
-                    setTimeout(() => {
-                        // Cambio: Las letras explotan en color negro absoluto
-                        s.style.color = '#000000'; 
+                    const currentIndex = parseInt(s.getAttribute('data-index'));
+                    const distance = Math.abs(currentIndex - clickedIndex);
+                    const delay = distance * 40; 
+                    
+                    setTimeout(() => { 
+                        // Limpiamos transiciones de hover para evitar conflictos
+                        s.style.transition = 'none';
+                        s.style.transitionDelay = '0s';
                         
                         s.className = ''; 
-                        s.style.animation = 'none'; 
-                        void s.offsetWidth; 
-                        s.style.transition = 'transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1)';
-                        
-                        const dirX = -(Math.random() * 2000 + 1000); 
-                        const dirY = -(Math.random() * 1000 + 500);  
-                        const endY = window.innerHeight + 1500;      
-                        
-                        const rotMid = (Math.random() - 0.5) * 1000;
-                        const rotEnd = rotMid + (Math.random() - 0.5) * 2000;
-                        const finalScale = Math.random() * 1.5 + 0.5;
-                        
-                        s.style.setProperty('--explode-x-mid', `${dirX * 0.4}px`); 
-                        s.style.setProperty('--explode-y-mid', `${dirY}px`);
-                        s.style.setProperty('--explode-rot-mid', `${rotMid}deg`);
-                        
-                        s.style.setProperty('--explode-x-end', `${dirX}px`);
-                        s.style.setProperty('--explode-y-end', `${endY}px`);
-                        s.style.setProperty('--explode-rot-end', `${rotEnd}deg`);
-                        s.style.setProperty('--explode-scale', finalScale);
-
-                        s.style.animation = `explode-letter 1.2s forwards`;
-                    }, delayExplosion);
+                        s.classList.add('letter-blackened'); 
+                    }, delay);
                 }
             });
 
-            setTimeout(() => {
-                const transScreen = document.getElementById('transitionScreen');
-                transScreen.classList.remove('hidden');
-                setTimeout(() => {
-                    window.location.href = 'experimento.html'; 
-                }, 2000);
-            }, 1000); 
+        } 
+        // SEGUNDO CLIC: Cae la grúa y suena el golpe sincronizado
+        else if (clickFase === 1) {
+            clickFase = 2;
+            const ball = document.getElementById('wreckingBall');
+            if (ball) ball.classList.add('swing-in');
 
-        }, 900); 
-    }
-});
+            setTimeout(() => {
+                const toggleSonido = document.getElementById('toggle-sonido');
+                if (bgMusic && toggleSonido?.classList.contains('active')) {
+                    bgMusic.currentTime = 0; 
+                    bgMusic.play().catch(err => console.log("Error al reproducir el golpe:", err));
+                }
+
+                const reversedLetters = [...letterSpans].reverse();
+                reversedLetters.forEach((s, i) => {
+                    if (s.textContent.trim() !== '') {
+                        const delayExplosion = i * 30; 
+                        setTimeout(() => {
+                            s.style.color = '#000000'; 
+                            s.className = ''; 
+                            s.style.animation = 'none'; 
+                            void s.offsetWidth; 
+                            s.style.transition = 'transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1)';
+                            
+                            const dirX = -(Math.random() * 2000 + 1000); 
+                            const dirY = -(Math.random() * 1000 + 500);  
+                            const endY = window.innerHeight + 1500;      
+                            
+                            const rotMid = (Math.random() - 0.5) * 1000;
+                            const rotEnd = rotMid + (Math.random() - 0.5) * 2000;
+                            const finalScale = Math.random() * 1.5 + 0.5;
+                            
+                            s.style.setProperty('--explode-x-mid', `${dirX * 0.4}px`); 
+                            s.style.setProperty('--explode-y-mid', `${dirY}px`);
+                            s.style.setProperty('--explode-rot-mid', `${rotMid}deg`);
+                            
+                            s.style.setProperty('--explode-x-end', `${dirX}px`);
+                            s.style.setProperty('--explode-y-end', `${endY}px`);
+                            s.style.setProperty('--explode-rot-end', `${rotEnd}deg`);
+                            s.style.setProperty('--explode-scale', finalScale);
+
+                            s.style.animation = `explode-letter 1.2s forwards`;
+                        }, delayExplosion);
+                    }
+                });
+
+                setTimeout(() => {
+                    const transScreen = document.getElementById('transitionScreen');
+                    if (transScreen) transScreen.classList.remove('hidden');
+                    setTimeout(() => {
+                        window.location.href = 'experimento.html'; 
+                    }, 2000);
+                }, 1000); 
+
+            }, 900); 
+        }
+    });
+}
 
 letterSpans.forEach(span => {
     if (span.textContent.trim() !== '') {
@@ -281,6 +204,18 @@ letterSpans.forEach(span => {
     }
 });
 
+// --- Lógica Botón CTA Footer ---
+const btnIrExperiencia = document.getElementById('btnIrExperiencia');
+if(btnIrExperiencia) {
+    btnIrExperiencia.addEventListener('click', () => {
+        const transScreen = document.getElementById('transitionScreen');
+        if (transScreen) transScreen.classList.remove('hidden');
+        setTimeout(() => {
+            window.location.href = 'experimento.html'; 
+        }, 1500);
+    });
+}
+
 // --- Observer para Animaciones de Scroll ---
 const scrollObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -288,7 +223,6 @@ const scrollObserver = new IntersectionObserver((entries) => {
     });
 }, { threshold: 0.15 });
 document.querySelectorAll('.scroll-anim').forEach(el => scrollObserver.observe(el));
-
 
 // --- LÓGICA REPRODUCTOR DE VIDEO EN LÍNEA ---
 const inlineVideoContainer = document.getElementById('inlineVideoContainer');
@@ -311,16 +245,18 @@ document.querySelectorAll('.interactive-card').forEach((card, index) => {
         card.addEventListener('click', () => {
             currentVideoIndex = index;
             playCurrentVideo();
-            inlineVideoContainer.classList.add('active');
-            setTimeout(() => {
-                inlineVideoContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 300);
+            if (inlineVideoContainer) {
+                inlineVideoContainer.classList.add('active');
+                setTimeout(() => {
+                    inlineVideoContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            }
         });
     }
 });
 
 function playCurrentVideo() {
-    if(videoDataList.length === 0) return;
+    if(videoDataList.length === 0 || !inlineVideoPlayer) return;
     
     const data = videoDataList[currentVideoIndex];
     inlineVideoPlayer.src = data.src;
@@ -328,9 +264,9 @@ function playCurrentVideo() {
     inlineVideoPlayer.play();
     
     const randomColor = uiColors[Math.floor(Math.random() * uiColors.length)];
-    inlineVideoTitle.style.color = randomColor;
-    prevVideoBtn.style.color = randomColor;
-    nextVideoBtn.style.color = randomColor;
+    if(inlineVideoTitle) inlineVideoTitle.style.color = randomColor;
+    if(prevVideoBtn) prevVideoBtn.style.color = randomColor;
+    if(nextVideoBtn) nextVideoBtn.style.color = randomColor;
 }
 
 if(prevVideoBtn) {
@@ -349,16 +285,18 @@ if(nextVideoBtn) {
 
 if(closeInlineVideoBtn) {
     closeInlineVideoBtn.addEventListener('click', () => {
-        inlineVideoContainer.classList.remove('active');
-        inlineVideoPlayer.pause();
-        inlineVideoPlayer.currentTime = 0; 
+        if (inlineVideoContainer) inlineVideoContainer.classList.remove('active');
+        if (inlineVideoPlayer) {
+            inlineVideoPlayer.pause();
+            inlineVideoPlayer.currentTime = 0; 
+        }
     });
 }
 
 // --- Colores Piezas 3D ---
 const paletaColores = ['#A6DDE5', '#9c3d42', '#ffffff', '#F5BEBF'];
 function activarCambioColor(elemento) {
-    if (!elemento) return;
+    if (!elemento || !elemento.parentElement) return;
     let currentColorIndex = 0; 
     elemento.parentElement.addEventListener('click', () => {
         currentColorIndex = (currentColorIndex + 1) % paletaColores.length;
@@ -367,37 +305,6 @@ function activarCambioColor(elemento) {
 }
 activarCambioColor(document.getElementById('piezaEstandar'));
 activarCambioColor(document.getElementById('piezaEspecial'));
-
-// --- Efecto Nombre ---
-document.querySelectorAll('.dev-name-line').forEach(line => {
-    const nameText = line.textContent;
-    line.innerHTML = ''; 
-    nameText.split('').forEach((char, index) => {
-        const span = document.createElement('span');
-        span.innerHTML = char === ' ' ? '&nbsp;' : char;
-        span.setAttribute('data-index', index); 
-        span.style.display = 'inline-block';
-        span.style.transition = 'color 0.15s ease-out, text-shadow 0.15s ease-out';
-        line.appendChild(span);
-    });
-
-    line.querySelectorAll('span').forEach(span => {
-        span.addEventListener('mouseover', (e) => {
-            e.target.classList.remove('name-letter-fading');
-            e.target.style.transitionDelay = '0s'; 
-            e.target.classList.add('name-letter-hovered');
-        });
-        span.addEventListener('mouseout', (e) => {
-            e.target.classList.remove('name-letter-hovered');
-            e.target.classList.add('name-letter-fading');
-            e.target.style.transitionDelay = (e.target.dataset.index * 0.05) + 's'; 
-            setTimeout(() => {
-                e.target.classList.remove('name-letter-fading');
-                e.target.style.transitionDelay = '0s';
-            }, (e.target.dataset.index * 50) + 1500);
-        });
-    });
-});
 
 // --- LÓGICA DE ENSAMBLE PLATAFORMA ---
 const individualPieces = document.querySelectorAll('.individual-piece');
@@ -473,7 +380,7 @@ timelineBtns.forEach(btn => {
     });
 });
 
-// --- LÓGICA DESPLEGABLE MATRIZ PIX ---
+// --- LÓGICA DESPLEGABLE MATRIZ PIX 1 (JUEGO MESA) ---
 const btnPix = document.getElementById('btnPix');
 const pixMatrix = document.getElementById('pixMatrix');
 
@@ -486,11 +393,11 @@ if (btnPix && pixMatrix) {
             pixMatrix.classList.add('open');
             btnPix.textContent = 'CERRAR MATRIZ PIX';
             
-            // Forzar un pequeño redraw del iframe en caso de que esté suspendido
             if (iframe) {
-                const currentSrc = iframe.src;
-                iframe.src = '';
-                setTimeout(() => { iframe.src = currentSrc; }, 10);
+                const currentSrc = iframe.getAttribute('src');
+                setTimeout(() => {
+                    iframe.src = currentSrc;
+                }, 300); 
             }
             
             setTimeout(() => {
@@ -499,6 +406,36 @@ if (btnPix && pixMatrix) {
         } else {
             pixMatrix.classList.remove('open');
             btnPix.textContent = 'DESPLEGAR MATRIZ PIX';
+        }
+    });
+}
+
+// --- LÓGICA DESPLEGABLE MATRIZ PIX 2 (FUNDAMENTO DIGITAL) ---
+const btnPixFundamento = document.getElementById('btnPixFundamento');
+const pixMatrixFundamento = document.getElementById('pixMatrixFundamento');
+
+if (btnPixFundamento && pixMatrixFundamento) {
+    btnPixFundamento.addEventListener('click', () => {
+        const isOpen = pixMatrixFundamento.classList.contains('open');
+        const iframe = pixMatrixFundamento.querySelector('iframe');
+        
+        if (!isOpen) {
+            pixMatrixFundamento.classList.add('open');
+            btnPixFundamento.textContent = 'CERRAR MATRIZ PIX DIGITAL';
+            
+            if (iframe) {
+                const currentSrc = iframe.getAttribute('src');
+                setTimeout(() => {
+                    iframe.src = currentSrc;
+                }, 300);
+            }
+            
+            setTimeout(() => {
+                pixMatrixFundamento.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        } else {
+            pixMatrixFundamento.classList.remove('open');
+            btnPixFundamento.textContent = 'DESPLEGAR MATRIZ PIX DIGITAL';
         }
     });
 }
@@ -513,8 +450,8 @@ galleryItems.forEach(item => {
     item.addEventListener('click', () => {
         const img = item.querySelector('.gallery-img');
         if (img && img.getAttribute('src')) {
-            modalExpandedImg.src = img.src;
-            imageModal.classList.add('active');
+            if (modalExpandedImg) modalExpandedImg.src = img.src;
+            if (imageModal) imageModal.classList.add('active');
         }
     });
 });
@@ -527,28 +464,32 @@ imageModal?.addEventListener('click', (e) => {
 
 if (closeImageModalBtn) {
     closeImageModalBtn.addEventListener('click', () => {
-        imageModal.classList.remove('active');
+        if (imageModal) imageModal.classList.remove('active');
     });
 }
 
-// --- LÓGICA LLUVIA DE FORMAS GEOMÉTRICAS ---
-const quoteBand = document.getElementById('quoteBand');
-const shapesContainer = document.getElementById('fallingShapesContainer');
-let shapesGenerated = false;
+// --- LÓGICA LLUVIA DE FORMAS GEOMÉTRICAS REUTILIZABLE ---
+function setupFallingShapes(sectionId, numShapes) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    
+    let shapesGenerated = false;
+    const shapesContainer = section.querySelector('.falling-shapes-container');
+    if (!shapesContainer) return;
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !shapesGenerated) {
+                generateShapes(shapesContainer, numShapes);
+                shapesGenerated = true;
+            }
+        });
+    }, { threshold: 0.3 });
+    
+    observer.observe(section);
+}
 
-const bandObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting && !shapesGenerated) {
-            generateShapes();
-            shapesGenerated = true;
-        }
-    });
-}, { threshold: 0.3 });
-
-if(quoteBand) bandObserver.observe(quoteBand);
-
-function generateShapes() {
-    const numShapes = 35; 
+function generateShapes(container, numShapes) {
     const colors = ['#9c3d42', '#A6DDE5', '#F5BEBF']; 
     const types = ['shape-rect', 'shape-hex'];
 
@@ -560,9 +501,9 @@ function generateShapes() {
         shape.classList.add('falling-shape', type);
         shape.style.backgroundColor = color;
 
-        const size = Math.random() * 60 + 40; 
+        const size = Math.random() * 35 + 25; 
         shape.style.width = `${size}px`;
-        shape.style.height = type === 'shape-rect' && Math.random() > 0.5 ? `${size * 1.5}px` : `${size}px`; 
+        shape.style.height = type === 'shape-rect' && Math.random() > 0.5 ? `${size * 1.2}px` : `${size}px`; 
 
         const finalX = Math.random() * 95; 
         const finalY = Math.random() * 85; 
@@ -576,6 +517,10 @@ function generateShapes() {
         shape.style.setProperty('--final-scale', finalScale);
         shape.style.animationDelay = `${delay}s`;
 
-        shapesContainer.appendChild(shape);
+        container.appendChild(shape);
     }
 }
+
+// Inicializar la lluvia de formas en ambas secciones
+setupFallingShapes('quoteBand', 35);
+setupFallingShapes('cta-experiencia', 40);

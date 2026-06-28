@@ -3,20 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juego Oblicuo</title>
+    <title>Gravitud</title>
     <link rel="stylesheet" href="experimento.css">
 </head>
 <body>
+    <div id="audio-toggle">
+        <div class="toggle-track">
+            <div class="toggle-thumb"></div>
+        </div>
+        <span class="toggle-label">Sonido</span>
+    </div>
+
     <div id="top-bar">
-        <div class="ui-box">Puntos: <span id="score-display">0</span></div>
-        <div class="ui-box target-box" id="target-box">Objetivo: <span id="target-display">-</span></div>
+        <div class="nav-buttons">
+            <button id="btn-back" class="ui-box btn-interactive">← Volver</button>
+            <button id="btn-restart" class="ui-box btn-interactive" style="display: none;">Reiniciar Interfaz </button>
+            
+            <div id="modos-container" style="position: relative; display: none;">
+                <button id="btn-modos-toggle" class="ui-box btn-interactive">Modos ▾</button>
+                <div id="states-menu" class="ui-box" style="display: none; position: absolute; top: 120%; left: 50%; transform: translateX(-50%); flex-direction: column; gap: 10px; width: max-content; padding: 15px; border: 1px solid #7ab1b8;">
+                    <button id="btn-state-heavy" class="ui-button menu-btn">Bola Pesada</button>
+                    <button id="btn-state-light" class="ui-button menu-btn">Bola Clara</button>
+                    <button id="btn-state-normal" class="ui-button menu-btn">Bola Normal</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ui-box stats-ui">Puntos: <span id="score-display">0</span></div>
+        <div class="ui-box target-box stats-ui" id="target-box">Objetivo: <span id="target-display">-</span></div>
     </div>
 
     <div id="roulette-screen" class="overlay">
         <div class="roulette-container">
-            <h2>Analizando nuevo estrato...</h2>
+            <h2>Seleccionando color...</h2>
             <div id="roulette-color" class="color-box"></div>
             <h3 id="roulette-name">???</h3>
+        </div>
+    </div>
+
+    <div id="end-screen" class="overlay">
+        <div class="roulette-container">
+            <h2>Has llegado al final de la experiencia</h2>
+            <p style="color: rgba(255,255,255,0.6); margin-bottom: 30px; font-size: 14px;">¿Cómo deseas continuar interactuando con el estrato?</p>
+            <div class="end-actions">
+                <button id="btn-free-mode" class="ui-button">Modo Libre</button>
+                <button id="btn-keep-playing" class="ui-button">¿Seguir jugando?</button>
+            </div>
         </div>
     </div>
 

@@ -37,6 +37,12 @@ let isTransitioning = false;
 let transitionEndTime = 0;
 let currentPlayerRadius = 35;
 
+// Variables de Control para Modo Libre y Regeneración
+let modoLibre = false;
+let mostrarMensajeModoLibre = false;
+let mensajeModoLibreTimer = 0;
+let ultimoRegenTime = Date.now();
+
 let pozos = [];
 let fragmentosActivos = [];
 let pilaresCayendo = []; 
@@ -47,7 +53,104 @@ let player = Bodies.circle(mapWidth / 2, mapHeight / 2, currentPlayerRadius, {
 player.isPlayer = true; 
 World.add(world, player);
 
-// --- 1. SOMBRAS RADIALES ---
+// ==========================================
+// MOTOR DE AUDIO (WEB AUDIO API)
+// ==========================================
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const audioBuffers = {};
+const activeAudioLoops = {};
+let sonidoActivado = true; // Control maestro del toggle
+
+const soundFiles = {
+    'impacto_Cian': 'audio/derribo_cian.mp3',
+    'impacto_Rojo': 'audio/derribo_rojo.mp3',
+    'impacto_Blanco': 'audio/derribo_blanco.mp3',
+    'impacto_Rosa': 'audio/derribo_rosa.mp3',
+    'pieza_especial': 'audio/impacto_especial.mp3',
+    'vidrio_agrietar': 'audio/vidrio_crack.mp3',
+    'vidrio_romper': 'audio/vidrio_break.mp3',
+    'rodar_normal': 'audio/rodar_normal.mp3',
+    'rodar_pesada': 'audio/rodar_pesada.mp3',
+    'rodar_clara': 'audio/rodar_clara.mp3',
+    'bola_caida_inicio': 'audio/caida_inicio.mp3',
+    'bola_meta': 'audio/meta_descenso.mp3',
+    'partculas_suelo': 'audio/particulas_suelo.mp3',
+    'partculas_cristal': 'audio/particulas_cristal.mp3',
+    'ruleta_activa': 'audio/ruleta_activa.mp3', 
+    'modo_bola_blanca': 'audio/cambio_blanca.mp3'
+};
+
+async function cargarSonidos() {
+    for (const [key, url] of Object.entries(soundFiles)) {
+        try {
+            const response = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+            audioBuffers[key] = await audioCtx.decodeAudioData(arrayBuffer);
+        } catch (e) {
+            console.warn(`No se pudo cargar el audio: ${url}`);
+        }
+    }
+}
+cargarSonidos();
+
+function reproducirSonido(key, randomizePitch = false) {
+    if (!sonidoActivado || !audioBuffers[key]) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    const source = audioCtx.createBufferSource();
+    source.buffer = audioBuffers[key];
+
+    if (randomizePitch) {
+        source.playbackRate.value = 0.9 + Math.random() * 0.2;
+    }
+
+    source.connect(audioCtx.destination);
+    source.start(0);
+}
+
+function controlarLoop(key, play, volume = 0.5, pitch = 1.0) {
+    if (!audioBuffers[key]) return;
+    if (play && !sonidoActivado) return; 
+
+    if (audioCtx.state === 'suspended' && sonidoActivado) audioCtx.resume();
+
+    if (play) {
+        if (!activeAudioLoops[key]) {
+            const source = audioCtx.createBufferSource();
+            source.buffer = audioBuffers[key];
+            source.loop = true;
+
+            const gainNode = audioCtx.createGain();
+            gainNode.gain.value = volume;
+            source.playbackRate.value = pitch;
+
+            source.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            source.start(0);
+
+            activeAudioLoops[key] = { source, gainNode };
+        } else {
+            activeAudioLoops[key].gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+            activeAudioLoops[key].source.playbackRate.setValueAtTime(pitch, audioCtx.currentTime);
+        }
+    } else {
+        if (activeAudioLoops[key]) {
+            try { activeAudioLoops[key].source.stop(); } catch(e){}
+            delete activeAudioLoops[key];
+        }
+    }
+}
+
+function desactivarTodosLosLoops() {
+    controlarLoop('rodar_normal', false);
+    controlarLoop('rodar_pesada', false);
+    controlarLoop('rodar_clara', false);
+    controlarLoop('partculas_suelo', false);
+    controlarLoop('partculas_cristal', false);
+    controlarLoop('ruleta_activa', false);
+}
+
+// --- SOMBRAS RADIALES ---
 function calcularSombraUnica(vertices, zHeight, lightPos) {
     let cx = 0, cy = 0;
     vertices.forEach(v => { cx += v.x; cy += v.y; });
@@ -66,7 +169,7 @@ function calcularSombraUnica(vertices, zHeight, lightPos) {
     return { intensity: shadowIntensity, sx, sy };
 }
 
-// --- 2. RENDERIZADOR CUERPOS 3D ---
+// --- RENDERIZADOR CUERPOS 3D ---
 function dibujarCuerpo3D(ctx, vertices, colorHex, zHeight, lightPos, isGlass = false, glassState = 'normal', impactPoint = null, glassPositions = null, isModifier = false) {
     const vx = zHeight * 0.35;
     const vy = -zHeight * 0.85;
@@ -125,23 +228,21 @@ function dibujarCuerpo3D(ctx, vertices, colorHex, zHeight, lightPos, isGlass = f
 
     if (isGlass && glassState === 'cracked' && impactPoint) {
         let impactTop = { x: cx + impactPoint.x + vx, y: cy + impactPoint.y + vy };
-        
         if (!hasLeftNeighbor) {
             ctx.save(); ctx.beginPath(); ctx.moveTo(v0.x, v0.y); ctx.lineTo(v3.x, v3.y); ctx.lineTo(top3.x, top3.y); ctx.lineTo(top0.x, top0.y); ctx.closePath(); ctx.clip();
             dibujarGrietasParedLateral(ctx, [v0, v3, top3, top0], impactTop.x, impactTop.y); ctx.restore();
         }
         if (!hasFrontNeighbor) {
             ctx.save(); ctx.beginPath(); ctx.moveTo(v3.x, v3.y); ctx.lineTo(v2.x, v2.y); ctx.lineTo(top2.x, top2.y); ctx.lineTo(top3.x, top3.y); ctx.closePath(); ctx.clip();
-            dibujarGrietasParedLateral(ctx, [v3, v2, top2, top3], impactTop.x, impactTop.y); ctx.restore();
+            dibujarGrietasParedLateral(ctx, [v3, v2, top2, top3], impactPoint.x, impactPoint.y); ctx.restore();
         }
-        
         ctx.save(); ctx.beginPath(); ctx.moveTo(top0.x, top0.y); ctx.lineTo(top1.x, top1.y); ctx.lineTo(top2.x, top2.y); ctx.lineTo(top3.x, top3.y); ctx.closePath(); ctx.clip();
         dibujarGrietasRealistas(ctx, {x: cx+vx, y: cy+vy}, impactPoint); ctx.restore();
     }
     if (isGlass) ctx.restore();
 }
 
-// --- 3. FRACTURAS REALISTAS ---
+// --- FRACTURAS REALISTAS ---
 function dibujarGrietasRealistas(ctx, tcPos, impactPointLocal) {
     ctx.save(); ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'; ctx.lineWidth = 1.0;
     let ix = tcPos.x + impactPointLocal.x; let iy = tcPos.y + impactPointLocal.y;
@@ -190,7 +291,6 @@ function trazarPoligonoIrregular(ctx, cx, cy, radio, segments, variance) {
     ctx.stroke();
 }
 
-// --- 4. RENDER CUBOS CAYENDO ---
 function dibujarCuboCayendo(ctx, p) {
     let easeProgress = p.progress * p.progress; 
     let theta = Math.min(easeProgress, 1) * (Math.PI / 2);
@@ -246,6 +346,7 @@ function dibujarCuboCayendo(ctx, p) {
 }
 
 function detonarExplosionVidrio(spawnX, spawnY) {
+    reproducirSonido('vidrio_romper'); 
     let numFrags = 16 + Math.floor(Math.random() * 8); 
     for (let i = 0; i < numFrags; i++) {
         let frag = Bodies.rectangle(
@@ -259,15 +360,37 @@ function detonarExplosionVidrio(spawnX, spawnY) {
     }
 }
 
-// --- 5. LÓGICA DE MODIFICADORES ---
+// --- AUTOMATIZACIONES DE SONIDO ASIGNADAS A LAS TRANSICIONES ---
 function limpiarEfectos() {
-    if (activeEffect === 'negative') { Body.scale(player, 35/65, 35/65); currentPlayerRadius = 35; }
+    if (activeEffect === 'negative') { 
+        Body.scale(player, 35/65, 35/65); 
+        currentPlayerRadius = 35; 
+        reproducirSonido('modo_bola_blanca', true); // Sonido al volver desde pesada
+    }
+    
+    if (activeEffect === 'positive') { 
+        reproducirSonido('modo_bola_blanca', true); // Sonido al volver desde clara
+    }
+    
     activeEffect = null;
 }
 
 function activarEfecto(tipo) {
-    if (activeEffect === 'negative' && tipo !== 'negative') { Body.scale(player, 35/65, 35/65); currentPlayerRadius = 35; }
-    if (tipo === 'negative' && activeEffect !== 'negative') { Body.scale(player, 65/35, 65/35); currentPlayerRadius = 65; }
+    if (activeEffect === 'negative' && tipo !== 'negative') { 
+        Body.scale(player, 35/65, 35/65); 
+        currentPlayerRadius = 35; 
+    }
+    
+    if (tipo === 'negative' && activeEffect !== 'negative') { 
+        Body.scale(player, 65/35, 65/35); 
+        currentPlayerRadius = 65; 
+        reproducirSonido('modo_bola_blanca', true); // Sonido al transformarse en pesada
+    }
+    
+    if (tipo === 'positive' && activeEffect !== 'positive') { 
+        reproducirSonido('modo_bola_blanca', true); // Sonido al transformarse en clara
+    }
+    
     activeEffect = tipo; effectEndTime = Date.now() + 15000; 
 }
 
@@ -282,7 +405,6 @@ function dibujarGloboDialogo(ctx, x, y, texto) {
 }
 
 function actualizarUI() {
-    // FUNCIÓN LIMPIADA: Ya no busca elementos eliminados, evita que el juego se congele.
     document.getElementById('score-display').innerText = puntos;
     const targetEl = document.getElementById('target-display');
     targetEl.innerText = colorObjetivo; targetEl.style.color = palette[colorObjetivo] || '#FEFBF2';
@@ -295,6 +417,8 @@ function girarRuleta() {
     const rBox = document.getElementById('roulette-color'); const rName = document.getElementById('roulette-name');
     if(overlay) { overlay.style.display = 'flex'; setTimeout(() => overlay.style.opacity = '1', 50); }
 
+    controlarLoop('ruleta_activa', true, 0.6);
+
     let giros = 0;
     let intervalo = setInterval(() => {
         let rc = coloresArr[Math.floor(Math.random() * coloresArr.length)];
@@ -303,6 +427,10 @@ function girarRuleta() {
         giros++;
         if (giros > 25) {
             clearInterval(intervalo); colorObjetivo = rc;
+            
+            controlarLoop('ruleta_activa', false);
+            reproducirSonido('ruleta_seleccion');
+            
             if(rBox) rBox.style.backgroundColor = palette[colorObjetivo]; 
             if(rName) { rName.innerText = colorObjetivo; rName.style.color = palette[colorObjetivo]; }
             actualizarUI();
@@ -318,10 +446,55 @@ function girarRuleta() {
     }, 80);
 }
 
+function regenerarPiezasPeriodicamente() {
+    const casillasOcupadas = new Set();
+    const todosCuerpos = Composite.allBodies(world);
+    
+    let totalPiezasActuales = todosCuerpos.filter(b => b.isPillar || b.isGlass).length;
+    if (totalPiezasActuales >= 150) return;
+
+    todosCuerpos.forEach(b => {
+        let col = Math.floor(b.position.x / tileSize);
+        let row = Math.floor(b.position.y / tileSize);
+        casillasOcupadas.add(`${col},${row}`);
+    });
+    pozos.forEach(p => casillasOcupadas.add(`${p.col},${p.row}`));
+
+    const maxCols = Math.floor(mapWidth / tileSize);
+    const maxRows = Math.floor(mapHeight / tileSize);
+    let piezasSpawneadas = 0;
+    let visibleDist = Math.max(canvas.width, canvas.height) * 0.7;
+
+    for (let k = 0; k < 30; k++) { 
+        let col = Math.floor(Math.random() * (maxCols - 4)) + 2;
+        let row = Math.floor(Math.random() * (maxRows - 4)) + 2;
+        let key = `${col},${row}`;
+        
+        let px = col * tileSize + tileSize / 2;
+        let py = row * tileSize + tileSize / 2;
+        let distToPlayer = Math.hypot(px - player.position.x, py - player.position.y);
+
+        if (!casillasOcupadas.has(key) && distToPlayer > visibleDist) {
+            casillasOcupadas.add(key);
+            let colorRandom = coloresArr[Math.floor(Math.random() * coloresArr.length)];
+            
+            if (Math.random() > 0.25) {
+                World.add(world, Bodies.rectangle(px, py, 70, 70, { isStatic: true, isPillar: true, colorKey: colorRandom }));
+            } else {
+                World.add(world, Bodies.rectangle(px, py, 120, 120, { isStatic: true, isGlass: true, glassState: 'normal' }));
+            }
+            piezasSpawneadas++;
+            if (piezasSpawneadas >= 5) break; 
+        }
+    }
+}
+
 function generarMapa() {
     const cuerposFisicos = Composite.allBodies(world);
     cuerposFisicos.forEach(b => { if(!b.isPlayer) World.remove(world, b); });
-    pozos = []; fragmentosActivos = []; pilaresCayendo = []; limpiarEfectos();
+    pozos = []; fragmentosActivos = []; pilaresCayendo = [];
+    if (!modoLibre) limpiarEfectos();
+    ultimoRegenTime = Date.now();
 
     const wt = 100; const wOpt = { isStatic: true };
     World.add(world, [
@@ -379,12 +552,20 @@ function generarMapa() {
         }
     }
     
-    puntos = 0; metaPuntos = Math.floor(Math.random() * 14) + 2; girarRuleta();
+    if (modoLibre) {
+        metaPuntos = 0; 
+        puntos = 0;
+        Body.setPosition(player, { x: mapWidth / 2, y: mapHeight / 2 });
+        isSpawning = true; spawnZ = 1200; spawnVZ = 0;
+    } else {
+        puntos = 0;
+        metaPuntos = Math.floor(Math.random() * 14) + 2; 
+        girarRuleta();
+    }
 }
 
-// --- 6. PROPAGACIÓN Y COLISIONES ---
 function propagarImpactoVidrio(primerVidrio, speed, impactPointLocal, playerVelocity) {
-    if (speed < 1.0) return; 
+    if (speed < 0.1) return; 
     let colBase = Math.floor(primerVidrio.position.x / tileSize); let rowBase = Math.floor(primerVidrio.position.y / tileSize);
     let dx = playerVelocity.x; let dy = playerVelocity.y;
     let stepCol = 0; let stepRow = 0;
@@ -396,19 +577,19 @@ function propagarImpactoVidrio(primerVidrio, speed, impactPointLocal, playerVelo
         if (nextVidrio) cadena.push(nextVidrio); else break; 
     }
 
-    if (speed >= 2.5) { 
+    if (speed >= 1.5) { 
         cadena.forEach((v, index) => {
             if (index === 0 || index === 1) { World.remove(world, v); detonarExplosionVidrio(v.position.x, v.position.y); }
             else if (index === 2 || index === 3) {
-                if (v.glassState === 'normal') { v.glassState = 'cracked'; v.impactPoint = { x: -stepCol * 20, y: -stepRow * 20 }; } 
+                if (v.glassState === 'normal') { v.glassState = 'cracked'; v.impactPoint = { x: -stepCol * 20, y: -stepRow * 20 }; reproducirSonido('vidrio_agrietar'); } 
                 else if (v.glassState === 'cracked') { World.remove(world, v); detonarExplosionVidrio(v.position.x, v.position.y); }
             }
         });
     } else { 
         cadena.forEach((v, index) => {
             if (index === 0 || index === 1) {
-                if (v.glassState === 'normal') { v.glassState = 'cracked'; v.impactPoint = index === 0 ? impactPointLocal : { x: -stepCol * 20, y: -stepRow * 20 }; } 
-                else if (v.glassState === 'cracked' && speed >= 1.0) { World.remove(world, v); detonarExplosionVidrio(v.position.x, v.position.y); }
+                if (v.glassState === 'normal') { v.glassState = 'cracked'; v.impactPoint = index === 0 ? impactPointLocal : { x: -stepCol * 20, y: -stepRow * 20 }; reproducirSonido('vidrio_agrietar'); } 
+                else if (v.glassState === 'cracked' && speed >= 0.2) { World.remove(world, v); detonarExplosionVidrio(v.position.x, v.position.y); }
             }
         });
     }
@@ -439,11 +620,17 @@ function verificarImpactoFisico(event) {
             World.remove(world, obstaculo);
             
             if (obstaculo.isModifier) {
-                if (obstaculo.colorKey === colorObjetivo) activarEfecto('positive'); else activarEfecto('negative');
+                reproducirSonido('pieza_especial', true); 
+                if (!modoLibre) {
+                    if (obstaculo.colorKey === colorObjetivo) activarEfecto('positive'); else activarEfecto('negative');
+                }
             } else {
-                if (obstaculo.colorKey === colorObjetivo) puntos++; else puntos--; 
+                reproducirSonido(`impacto_${obstaculo.colorKey}`, true); 
+                if (!modoLibre) {
+                    if (obstaculo.colorKey === colorObjetivo) puntos++; else puntos--; 
+                }
             }
-            actualizarUI();
+            if (!modoLibre) actualizarUI();
 
             let dx = obstaculo.position.x - player.position.x; let dy = obstaculo.position.y - player.position.y;
             let fallDir = { x: 0, y: 0 };
@@ -466,11 +653,24 @@ window.addEventListener('keyup', (e) => { if (keys.hasOwnProperty(e.key)) keys[e
 
 Events.on(engine, 'beforeUpdate', () => {
     let now = Date.now();
+    
     if (activeEffect && !isTransitioning) {
-        if (now > effectEndTime) { isTransitioning = true; transitionEndTime = now + 2000; limpiarEfectos(); }
+        if (!modoLibre && now > effectEndTime) { 
+            isTransitioning = true; transitionEndTime = now + 2000; limpiarEfectos(); 
+        }
     }
 
-    if (!juegoActivo || estaDescendiendo || isSpawning || isTransitioning) return;
+    if (juegoActivo && (now - ultimoRegenTime > 20000)) {
+        ultimoRegenTime = now;
+        regenerarPiezasPeriodicamente();
+    }
+
+    if (!juegoActivo || estaDescendiendo || isSpawning || isTransitioning) {
+        if (estaDescendiendo || isTransitioning || !juegoActivo) {
+            desactivarTodosLosLoops();
+        }
+        return;
+    }
     
     const speed = activeEffect === 'negative' ? 0.10 : 0.13; 
     let force = { x: 0, y: 0 };
@@ -478,11 +678,48 @@ Events.on(engine, 'beforeUpdate', () => {
     if (keys.a || keys.ArrowLeft) force.x -= speed; if (keys.d || keys.ArrowRight) force.x += speed;
     Body.applyForce(player, player.position, force);
 
+    let velMag = Matter.Vector.magnitude(player.velocity);
+    let loopKey = activeEffect === 'negative' ? 'rodar_pesada' : (activeEffect === 'positive' ? 'rodar_clara' : 'rodar_normal');
+    
+    if (loopKey !== 'rodar_normal') controlarLoop('rodar_normal', false);
+    if (loopKey !== 'rodar_pesada') controlarLoop('rodar_pesada', false);
+    if (loopKey !== 'rodar_clara') controlarLoop('rodar_clara', false);
+
+    if (velMag > 0.15) {
+        let vol = Math.min(velMag / 10, 0.8);
+        let pitch = 0.8 + (velMag / 15);
+        controlarLoop(loopKey, true, vol, pitch); 
+
+        let colInt = Math.floor(player.position.x / tileSize);
+        let rowInt = Math.floor(player.position.y / tileSize);
+        let pilarCercano = fragmentosActivos.find(f => Math.floor(f.position.x / tileSize) === colInt && Math.floor(f.position.y / tileSize) === rowInt);
+        
+        if (pilarCercano) {
+            if (pilarCercano.isGlassShard) {
+                controlarLoop('partculas_cristal', true, vol * 0.3, pitch);
+                controlarLoop('partculas_suelo', false);
+            } else {
+                controlarLoop('partculas_suelo', true, vol * 0.3, pitch);
+                controlarLoop('partculas_cristal', false);
+            }
+        } else {
+            controlarLoop('partculas_suelo', false);
+            controlarLoop('partculas_cristal', false);
+        }
+    } else {
+        controlarLoop(loopKey, false);
+        controlarLoop('partculas_suelo', false);
+        controlarLoop('partculas_cristal', false);
+    }
+
     pozos.forEach(pozo => {
-        if (Matter.Vector.magnitude(Matter.Vector.sub(player.position, {x: pozo.cx, y: pozo.cy})) < tileSize * 0.4 && puntos >= metaPuntos) {
+        let umbralPuntosValido = modoLibre ? true : (puntos >= metaPuntos);
+        if (Matter.Vector.magnitude(Matter.Vector.sub(player.position, {x: pozo.cx, y: pozo.cy})) < tileSize * 0.4 && umbralPuntosValido) {
             estaDescendiendo = true; factorDescentAnim = 0; pozoObjetivo = { x: pozo.cx, y: pozo.cy };
+            desactivarTodosLosLoops(); 
+            reproducirSonido('bola_meta'); 
             let topBar = document.getElementById('top-bar');
-            if(topBar) topBar.style.opacity = 0; 
+            if(topBar && !modoLibre) topBar.style.opacity = 0; 
         }
     });
 });
@@ -491,6 +728,7 @@ function render() {
     let now = Date.now(); ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (isSpawning) {
+        if (spawnZ === 1200) reproducirSonido('bola_caida_inicio'); 
         spawnVZ -= 3.5; spawnZ += spawnVZ;
         if (spawnZ <= 0) { spawnZ = 0; spawnVZ *= -0.4; if (Math.abs(spawnVZ) < 2) { isSpawning = false; juegoActivo = true; } }
     }
@@ -514,10 +752,13 @@ function render() {
     }
 
     pozos.forEach(pozo => {
-        if (puntos >= metaPuntos) {
-            let gradPozo = ctx.createRadialGradient(pozo.cx, pozo.cy, 10, pozo.cx, pozo.cy, tileSize/1.2);
-            gradPozo.addColorStop(0, '#000000'); gradPozo.addColorStop(1, 'rgba(0,0,0,0)'); 
-            ctx.fillStyle = gradPozo; ctx.fillRect(pozo.x, pozo.y, tileSize, tileSize);
+        if (modoLibre || puntos >= metaPuntos) {
+            let gradPozo = ctx.createRadialGradient(pozo.cx, pozo.cy, 5, pozo.cx, pozo.cy, tileSize * 0.45);
+            gradPozo.addColorStop(0, '#000000'); 
+            gradPozo.addColorStop(0.8, '#050505'); 
+            gradPozo.addColorStop(1, 'rgba(0,0,0,0)'); 
+            ctx.fillStyle = gradPozo; 
+            ctx.fillRect(pozo.x, pozo.y, tileSize, tileSize);
         } else {
             ctx.fillStyle = 'rgba(20, 5, 5, 0.8)'; ctx.fillRect(pozo.x, pozo.y, tileSize, tileSize);
             ctx.strokeStyle = 'rgba(140, 32, 65, 0.5)'; ctx.lineWidth = 4;
@@ -634,9 +875,21 @@ function render() {
         factorDescentAnim += 0.02; 
         if (factorDescentAnim >= 1.0) {
             estaDescendiendo = false; 
-            let topBar = document.getElementById('top-bar');
-            if(topBar) topBar.style.opacity = 1; 
-            generarMapa(); 
+            
+            if (modoLibre) {
+                generarMapa();
+            } else {
+                let topBar = document.getElementById('top-bar');
+                if(topBar) topBar.style.opacity = 1; 
+
+                juegoActivo = false;
+                Body.setVelocity(player, { x: 0, y: 0 });
+                const endOverlay = document.getElementById('end-screen');
+                if (endOverlay) {
+                    endOverlay.style.display = 'flex';
+                    setTimeout(() => endOverlay.style.opacity = '1', 50);
+                }
+            }
         }
     }
 
@@ -651,15 +904,44 @@ function render() {
         if (timeLeft < 3000 && Math.floor(now / 150) % 2 === 0) flickerMult = 0.5 + Math.random() * 0.3; 
     }
 
-    let targetLight = isWhiteEffect ? 900 : 450;
+    let targetLight = isWhiteEffect ? 900 : 450; 
     const lightRadius = estaDescendiendo ? Math.max(10, targetLight * (1 - factorDescentAnim)) : (targetLight * flickerMult);
     
     const darkGradient = ctx.createRadialGradient(renderPlayerScreenX, renderPlayerScreenY, currentPlayerRadius + 20, renderPlayerScreenX, renderPlayerScreenY, lightRadius);
-    darkGradient.addColorStop(0, 'rgba(5, 5, 5, 0)'); darkGradient.addColorStop(0.5, 'rgba(5, 5, 5, 0.6)'); darkGradient.addColorStop(1, 'rgba(5, 5, 5, 0.99)');
+    darkGradient.addColorStop(0, 'rgba(5, 5, 5, 0)'); 
+    darkGradient.addColorStop(0.5, 'rgba(5, 5, 5, 0.4)'); 
+    darkGradient.addColorStop(1, 'rgba(5, 5, 5, 0.85)'); 
     ctx.fillStyle = darkGradient; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    let cycleLength = 2500; 
+    let t = (now % (cycleLength * coloresArr.length)) / cycleLength;
+    let index1 = Math.floor(t);
+    let index2 = (index1 + 1) % coloresArr.length;
+    let blend = t - index1;
+    let c1 = palette[coloresArr[index1]];
+    let c2 = palette[coloresArr[index2]];
+    let r1 = parseInt(c1.slice(1,3), 16), g1 = parseInt(c1.slice(3,5), 16), b1 = parseInt(c1.slice(5,7), 16);
+    let r2 = parseInt(c2.slice(1,3), 16), g2 = parseInt(c2.slice(3,5), 16), b2 = parseInt(c2.slice(5,7), 16);
+    let colorHaloAnimado = `rgb(${Math.round(r1 + (r2 - r1) * blend)}, ${Math.round(g1 + (g2 - g1) * blend)}, ${Math.round(b1 + (b2 - b1) * blend)})`;
+
     pozos.forEach(pozo => {
-        if (puntos < metaPuntos) {
+        if (modoLibre || puntos >= metaPuntos) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(pozo.x - cameraX, pozo.y - cameraY, tileSize, tileSize);
+            
+            ctx.strokeStyle = colorHaloAnimado;
+            ctx.lineWidth = 4;
+            ctx.shadowColor = colorHaloAnimado;
+            ctx.shadowBlur = 25; 
+            ctx.stroke();
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.shadowBlur = 10;
+            ctx.stroke();
+            ctx.restore();
+        } else if (!modoLibre && puntos < metaPuntos) {
             let dist = Matter.Vector.magnitude(Matter.Vector.sub(player.position, {x: pozo.cx, y: pozo.cy}));
             if (dist < tileSize * 1.5) dibujarGloboDialogo(ctx, pozo.cx - cameraX, pozo.cy - cameraY, `Meta: ${metaPuntos} pts`);
         }
@@ -674,7 +956,104 @@ function render() {
         if (timeLeft <= 0) isTransitioning = false;
     }
 
+    if (modoLibre && mostrarMensajeModoLibre && now < mensajeModoLibreTimer) {
+        ctx.save();
+        ctx.font = 'bold 26px "Segoe UI", sans-serif';
+        ctx.fillStyle = palette['Cian'];
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0,0,0,0.8)';
+        ctx.shadowBlur = 8;
+        ctx.fillText('MODO LIBRE ACTIVADO', canvas.width / 2, canvas.height / 2 - 140);
+        ctx.restore();
+    }
+
     requestAnimationFrame(render);
+}
+
+// --- BOTONES Y CONTROL DE INTERFAZ ---
+document.getElementById('btn-back').addEventListener('click', () => { window.location.href = 'landing.html'; });
+document.getElementById('btn-restart').addEventListener('click', () => { window.location.reload(); });
+
+document.getElementById('btn-modos-toggle').addEventListener('click', () => {
+    let menuContent = document.getElementById('states-menu');
+    let btnToggle = document.getElementById('btn-modos-toggle');
+    if (menuContent.style.display === 'none') {
+        menuContent.style.display = 'flex';
+        btnToggle.innerText = 'Modos ▴';
+    } else {
+        menuContent.style.display = 'none';
+        btnToggle.innerText = 'Modos ▾';
+    }
+});
+
+document.getElementById('btn-free-mode').addEventListener('click', () => {
+    modoLibre = true;
+    mostrarMensajeModoLibre = true;
+    mensajeModoLibreTimer = Date.now() + 3000;
+    
+    document.querySelectorAll('.stats-ui').forEach(el => el.style.display = 'none');
+    document.getElementById('btn-restart').style.display = 'inline-block';
+    document.getElementById('modos-container').style.display = 'inline-block';
+    
+    const endOverlay = document.getElementById('end-screen');
+    if (endOverlay) {
+        endOverlay.style.opacity = '0';
+        setTimeout(() => endOverlay.style.display = 'none', 500);
+    }
+    generarMapa();
+});
+
+document.getElementById('btn-keep-playing').addEventListener('click', () => {
+    modoLibre = false;
+    mostrarMensajeModoLibre = false;
+    limpiarEfectos();
+    
+    document.querySelectorAll('.stats-ui').forEach(el => el.style.display = 'inline-block');
+    document.getElementById('btn-restart').style.display = 'none';
+    document.getElementById('modos-container').style.display = 'none';
+    
+    const endOverlay = document.getElementById('end-screen');
+    if (endOverlay) {
+        endOverlay.style.opacity = '0';
+        setTimeout(() => endOverlay.style.display = 'none', 500);
+    }
+    generarMapa();
+});
+
+document.getElementById('btn-state-heavy').addEventListener('click', () => {
+    if (modoLibre) {
+        limpiarEfectos(); 
+        activarEfecto('negative');
+        effectEndTime = Date.now() + 9999999; 
+    }
+});
+document.getElementById('btn-state-light').addEventListener('click', () => {
+    if (modoLibre) {
+        limpiarEfectos(); 
+        activarEfecto('positive');
+        effectEndTime = Date.now() + 9999999; 
+    }
+});
+document.getElementById('btn-state-normal').addEventListener('click', () => {
+    if (modoLibre) limpiarEfectos();
+});
+
+// --- LÓGICA DEL BOTÓN DE SONIDO ---
+const audioToggleBtn = document.getElementById('audio-toggle');
+if (audioToggleBtn) {
+    audioToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        sonidoActivado = !sonidoActivado;
+        
+        if (sonidoActivado) {
+            audioToggleBtn.classList.remove('off');
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        } else {
+            audioToggleBtn.classList.add('off');
+            if (audioCtx.state === 'running') audioCtx.suspend();
+            desactivarTodosLosLoops(); 
+        }
+    });
 }
 
 Engine.run(engine); generarMapa(); render(); window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
